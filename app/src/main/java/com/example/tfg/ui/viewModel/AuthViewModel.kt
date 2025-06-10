@@ -1,11 +1,13 @@
 package com.example.tfg.ui.viewModel
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tfg.data.models.Direccion
 import com.example.tfg.data.models.LoginRequest
 import com.example.tfg.data.models.Usuario
+import com.example.tfg.data.models.UsuarioDTO
 import com.example.tfg.data.remote.RetrofitClient
 import com.example.tfg.utils.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +30,9 @@ class AuthViewModel(
 
     private val _isAdmin = MutableStateFlow(false)
     val isAdmin: StateFlow<Boolean> = _isAdmin
+
+    private val _usuarioActual = MutableStateFlow<UsuarioDTO?>(null)
+    val usuarioActual: StateFlow<UsuarioDTO?> = _usuarioActual
 
     sealed class AuthState {
         data object Idle : AuthState()
@@ -85,6 +90,17 @@ class AuthViewModel(
                 onResult(false, if (e.code() == 409) "Usuario/email ya existe" else "Error en el servidor")
             } catch (e: Exception) {
                 onResult(false, "Error de conexión")
+            }
+        }
+    }
+    fun cargarPerfil() {
+        viewModelScope.launch {
+            try {
+                val usuario = RetrofitClient.apiService.getSelf()
+                _usuarioActual.value = usuario
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "❌ Error al cargar perfil", e)
+                _usuarioActual.value = null
             }
         }
     }

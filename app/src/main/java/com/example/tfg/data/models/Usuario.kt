@@ -12,18 +12,20 @@ data class Usuario(
 data class UsuarioDTO(
     val username: String,
     val email: String,
-    val rol: String?
+    val rol: String?,
+    val direccion: Direccion
 )
 data class UsuarioUpdateDTO(
     val currentPassword: String?, // Solo necesario para cambios de contraseña en self
     val newPassword: String?,
     val email: String?,
     val rol: String?, // Solo editable por admin
-    val direccion: Direccion?
+    val direccion: Direccion
 )
 data class Direccion(
     val calle: String,
     val num: String,
-    val cp: String,
-    val ciudad: String
+    val municipio: String,
+    val provincia: String,
+    val cp: String
 )

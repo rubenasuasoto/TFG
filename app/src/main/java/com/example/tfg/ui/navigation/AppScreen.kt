@@ -7,6 +7,8 @@ sealed class AppScreen(val route: String) {
     data object DetalleProducto : AppScreen("detalle_producto")
     data object Menu : AppScreen("menu")
     data object Carrito : AppScreen("carrito")
+    data object Perfil : AppScreen("perfil")
+    data object Pedidos : AppScreen("pedidos")
 
 
 }

@@ -9,8 +9,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tfg.ui.screens.LoginScreen
-import com.example.tfg.ui.screens.RegisterScreen
+import com.example.tfg.ui.screens.inicio_sesion.LoginScreen
+import com.example.tfg.ui.screens.inicio_sesion.RegisterScreen
 import com.example.tfg.ui.screens.home.HomeScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
 import com.example.tfg.ui.viewModel.Factory.AuthViewModelFactory
@@ -23,6 +23,8 @@ import com.example.tfg.ui.components.SnackLoginRedirect
 import com.example.tfg.ui.screens.CarritoScreen
 import com.example.tfg.ui.screens.DetalleProductoScreen
 import com.example.tfg.ui.screens.MenuScreen
+import com.example.tfg.ui.screens.PedidosScreen
+import com.example.tfg.ui.screens.PerfilScreen
 import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
 
 
@@ -40,7 +42,7 @@ fun AppNavigation(context: Context) {
     val isAdmin by authViewModel.isAdmin.collectAsState()
 
     // Determina si el usuario está logueado
-    val isUserLoggedIn = true //loginState is AuthState.Success
+    val isUserLoggedIn = loginState is AuthState.Success
 
     // Ejecuta verificación del token existente solo una vez
     LaunchedEffect(Unit) {
@@ -101,6 +103,13 @@ fun AppNavigation(context: Context) {
                 )
             }
         }
+        composable(AppScreen.Perfil.route) {
+            PerfilScreen(navController, authViewModel)
+        }
+        composable(AppScreen.Pedidos.route) {
+            PedidosScreen(navController, pedidoViewModel, isUserLoggedIn)
+        }
+
 
 
 

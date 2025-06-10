@@ -39,12 +39,14 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
             Divider()
 
             Text("Perfil", modifier = Modifier.clickable {
-                // navController.navigate("perfil") // Si existe
+                navController.navigate(AppScreen.Perfil.route)
             })
 
+
             Text("Pedidos", modifier = Modifier.clickable {
-                // navController.navigate("pedidos") // Si existe
+                navController.navigate(AppScreen.Pedidos.route)
             })
+
 
             Text("Cambiar contraseña", modifier = Modifier.clickable {
                 // navController.navigate("cambiar_contrasena") // Si existe

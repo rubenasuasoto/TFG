@@ -68,25 +68,17 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-    fun deletePedido(pedidoId: String, onResult: (Boolean) -> Unit) {
+    fun cancelarPedido(id: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = if (_isAdmin.value) {
-                    RetrofitClient.apiService.deletePedido(pedidoId)
-                } else {
-                    RetrofitClient.apiService.deletePedidoSelf(pedidoId)
-                }
-
+                val response = RetrofitClient.apiService.deletePedidoSelf(id)
                 if (response.isSuccessful) {
-                    Log.d("PedidoViewModel", "✅ Pedido eliminado")
-                    fetchPedidos() // Actualizar la lista completa
+                    fetchPedidos()
                     onResult(true)
                 } else {
-                    Log.e("PedidoViewModel", "❌ Error al eliminar: ${response.code()}")
                     onResult(false)
                 }
             } catch (e: Exception) {
-                Log.e("PedidoViewModel", "❌ Excepción en deletePedido", e)
                 onResult(false)
             }
         }

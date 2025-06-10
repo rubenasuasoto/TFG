@@ -1,5 +1,6 @@
 package com.example.tfg.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
@@ -26,10 +29,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,296 +51,126 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.tfg.ui.components.BottomBarNavigation
+import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.PedidoViewModel
 import java.util.Date
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PedidoScreen(navController: NavController, viewModel: PedidoViewModel) {}
-/*
-    val pedidos by viewModel.pedidos.collectAsState()
-    val isAdmin by viewModel.isAdmin.collectAsState()
+fun PedidosScreen(
+    navController: NavHostController,
+    pedidoViewModel: PedidoViewModel,
+    isUserLoggedIn: Boolean
+) {
+    val pedidos by pedidoViewModel.pedidos.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPedidos()
+        pedidoViewModel.fetchPedidos()
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(
-            "Lista de Pedidos",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary
-        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Mis pedidos") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            BottomBarNavigation(
+                navController = navController,
+                onCarritoClick = {
+                    if (isUserLoggedIn) navController.navigate(AppScreen.Carrito.route)
+                    else navController.navigate(AppScreen.Login.route)
+                },
+                onMenuClick = {
+                    if (isUserLoggedIn) navController.navigate(AppScreen.Menu.route)
+                    else navController.navigate(AppScreen.Login.route)
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
+            if (pedidos.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("No tienes pedidos aún.")
+                }
+                return@Column
+            }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        LazyColumn {
-            items(pedidos) { pedido ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = CardDefaults.cardElevation(4.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("🛒 Nº Pedido: ${pedido.numeroPedido }", fontWeight = FontWeight.Bold)
-                        Text("📦 Artículo: ${pedido.articulo}")
-                        Text("💰 Precio: ${pedido.precioFinal}€")
-                        Text("✅ Estado: ${pedido.estado}")
-                        Text("🧾 Factura: ${pedido.factura.numeroFactura}")
-                        Text("📅 Fecha: ${pedido.factura.fecha}")
-
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                            Button(
-                                onClick = { navController.navigate("pedido_form/${pedido.numeroPedido}") },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("✏️ Editar")
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(pedidos) { pedido ->
+                    Card(elevation = CardDefaults.cardElevation(4.dp)) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text("Numero de pedido: ${pedido.numeroPedido}")
+                            Text("Artículo: ${pedido.articulo ?: "N/A"}", style = MaterialTheme.typography.titleMedium)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("Estado: ", style = MaterialTheme.typography.bodyMedium)
+                                EstadoPedidoLabel(pedido.estado)
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Fecha: ${pedido.fechaCreacion.toString().substring(0, 10)}")
+                            Text("Total: €${pedido.precioFinal}")
 
-                            Button(
-                                onClick = { pedido.numeroPedido?.let { viewModel.deletePedido(it) { /* Manejar resultado */ } } },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("🗑️ Eliminar")
+                            if (pedido.estado == "PENDIENTE") {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Button(
+                                    onClick = {
+                                        pedido.numeroPedido?.let {
+                                            pedidoViewModel.cancelarPedido(it) { ok ->
+                                                if (!ok) {
+                                                    Log.e("PedidoUI", "❌ No se pudo cancelar")
+                                                }
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Cancelar pedido")
+                                }
                             }
                         }
                     }
                 }
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { navController.navigate("pedido_form/new") }) {
-            Text("➕ Crear Nuevo Pedido")
-        }
     }
 }
-
 @Composable
-fun PedidoFormScreen(navController: NavController, viewModel: PedidoViewModel, pedidoId: String?) {
-    val articulo = remember { mutableStateOf("") }
-    val precio = remember { mutableStateOf("") }
-    val estado = remember { mutableStateOf("PENDIENTE") }
-    val nFactura = remember { mutableStateOf("") }
-    val formaPago = remember { mutableStateOf("TARJETA") }
-    val isLoading = remember { mutableStateOf(false) }
-    val isEditing = remember { mutableStateOf(pedidoId != "new") }
-    val errorMessage = remember { mutableStateOf("") }
-    val estadoExpanded = remember { mutableStateOf(false) }
-    val pagoExpanded = remember { mutableStateOf(false) }
-
-    LaunchedEffect(pedidoId) {
-        if (isEditing.value) {
-            viewModel.getPedidoById(pedidoId!!) { pedido ->
-                if (pedido != null) {
-                    articulo.value = pedido.articulo
-                    precio.value = pedido.precio.toString()
-                    estado.value = pedido.estado
-                    nFactura.value = pedido.factura.Nºfactura
-                    formaPago.value = pedido.factura.forma_de_pago
-                }
-            }
-        }
+fun EstadoPedidoLabel(estado: String) {
+    val color = when (estado.uppercase()) {
+        "ENTREGADO" -> MaterialTheme.colorScheme.primary
+        "PENDIENTE" -> MaterialTheme.colorScheme.tertiary
+        "CANCELADO" -> MaterialTheme.colorScheme.error
+        else -> MaterialTheme.colorScheme.outline
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    val texto = when (estado.uppercase()) {
+        "ENTREGADO" -> "Entregado"
+        "PENDIENTE" -> "Pendiente"
+        "CANCELADO" -> "Cancelado"
+        else -> estado
+    }
+
+    Surface(
+        color = color.copy(alpha = 0.15f),
+        shape = RoundedCornerShape(8.dp)
     ) {
         Text(
-            text = if (isEditing.value) "✏️ Editar Pedido" else "➕ Crear Nuevo Pedido",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.primary
+            text = texto,
+            color = color,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.bodySmall
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = articulo.value,
-            onValueChange = { articulo.value = it },
-            label = { Text("Artículo") },
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = isEditing.value
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = precio.value,
-            onValueChange = { precio.value = it },
-            label = { Text("Precio (€)") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            readOnly = isEditing.value
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Selector de estado
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = estado.value,
-                onValueChange = {},
-                label = { Text("Estado") },
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.CheckCircle, contentDescription = "Estado Icon") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Desplegar",
-                        modifier = Modifier.clickable { estadoExpanded.value = true }
-                    )
-                }
-            )
-
-            DropdownMenu(
-                expanded = estadoExpanded.value,
-                onDismissRequest = { estadoExpanded.value = false },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                listOf("PENDIENTE", "PROCESANDO", "ENVIADO", "ENTREGADO", "CANCELADO").forEach { estadoOption ->
-                    DropdownMenuItem(
-                        text = { Text(estadoOption) },
-                        onClick = {
-                            estado.value = estadoOption
-                            estadoExpanded.value = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = nFactura.value,
-            onValueChange = { nFactura.value = it },
-            label = { Text("Nº Factura") },
-            modifier = Modifier.fillMaxWidth(),
-            readOnly = isEditing.value
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Selector de forma de pago
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = formaPago.value,
-                onValueChange = {},
-                label = { Text("Forma de Pago") },
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = "Desplegar",
-                        modifier = Modifier.clickable { pagoExpanded.value = true }
-                    )
-                }
-            )
-
-            DropdownMenu(
-                expanded = pagoExpanded.value,
-                onDismissRequest = { pagoExpanded.value = false },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                listOf("TARJETA", "EFECTIVO", "TRANSFERENCIA", "BIZUM").forEach { pagoOption ->
-                    DropdownMenuItem(
-                        text = { Text(pagoOption) },
-                        onClick = {
-                            formaPago.value = pagoOption
-                            pagoExpanded.value = false
-                        }
-                    )
-                }
-            }
-        }
-
-        if (errorMessage.value.isNotEmpty()) {
-            Text(errorMessage.value, color = Color.Red, modifier = Modifier.padding(8.dp))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { navController.popBackStack() },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-            ) {
-                Text("⬅️ Volver")
-            }
-
-            Button(
-                onClick = {
-                    if (articulo.value.isBlank()) {
-                        errorMessage.value = "⚠️ El artículo no puede estar vacío."
-                        return@Button
-                    }
-                    if (precio.value.isBlank()) {
-                        errorMessage.value = "⚠️ El precio no puede estar vacío."
-                        return@Button
-                    }
-
-                    isLoading.value = true
-
-                    val facturaDTO = FacturaDTO(
-                        Nºfactura = nFactura.value,
-                        fecha_compra = Date(), // Fecha actual
-                        forma_de_pago = formaPago.value
-                    )
-
-                    if (isEditing.value) {
-                        viewModel.updatePedidoEstado(
-                            pedidoId!!,
-                            estado.value
-                        ) { success ->
-                            if (success) {
-                                navController.popBackStack()
-                            } else {
-                                errorMessage.value = "❌ Error al actualizar el pedido."
-                            }
-                            isLoading.value = false
-                        }
-                    } else {
-                        viewModel.createPedido(
-                            articulo.value,
-                            estado.value,
-                            precio.value.toDouble(),
-                            facturaDTO
-                        ) { success ->
-                            if (success) {
-                                navController.popBackStack()
-                            } else {
-                                errorMessage.value = "❌ Error al crear el pedido."
-                            }
-                            isLoading.value = false
-                        }
-                    }
-                },
-                enabled = !isLoading.value
-            ) {
-                if (isLoading.value) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White)
-                } else {
-                    Text(if (isEditing.value) "✅ Actualizar Pedido" else "📌 Crear Pedido")
-                }
-            }
-        }
     }
 }
-*/
+

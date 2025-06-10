@@ -11,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Producto
-import com.example.tfg.ui.components.ProductoItem
+import com.example.tfg.ui.components.BottomBarNavigation
+import com.example.tfg.ui.components.DetalleProductoView
+import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.ProductoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +22,8 @@ fun DetalleProductoScreen(
     numeroProducto: String,
     navController: NavHostController,
     productoViewModel: ProductoViewModel = viewModel(),
-    onAgregarCarrito: (Producto) -> Unit
+    onAgregarCarrito: (Producto) -> Unit,
+    isUserLoggedIn: Boolean
 ) {
     val productoSeleccionado by productoViewModel.productoSeleccionado.collectAsState()
     val productoError by productoViewModel.productoError.collectAsState()
@@ -39,40 +42,63 @@ fun DetalleProductoScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            BottomBarNavigation(
+                navController = navController,
+                onCarritoClick = {
+                    if (isUserLoggedIn) {
+                        navController.navigate(AppScreen.Carrito.route)
+                    } else {
+                        navController.navigate(AppScreen.Login.route)
+                    }
+                },
+                onMenuClick = {
+                    if (isUserLoggedIn) {
+                        navController.navigate(AppScreen.Menu.route)
+                    } else {
+                        navController.navigate(AppScreen.Login.route)
+                    }
+                }
+            )
         }
-            ) { paddingValues ->
-                when {
-                    productoSeleccionado != null -> {
-                        Column(modifier = Modifier.padding(paddingValues)) {
-                            ProductoItem(
-                                producto = productoSeleccionado!!,
-                                onVerDetalle = {}, // Ya estamos aquí
-                                onAgregarCarrito = { onAgregarCarrito(productoSeleccionado!!) }
-                            )
-                        }
+    ) { paddingValues ->
+        when {
+            productoSeleccionado != null -> {
+                DetalleProductoView(
+                    producto = productoSeleccionado!!,
+                    isUserLoggedIn = isUserLoggedIn,
+                    onAgregarYIrCarrito = {
+                        onAgregarCarrito(productoSeleccionado!!)
+                        navController.navigate(AppScreen.Carrito.route)
+                    },
+                    onLoginRedirect = {
+                        navController.navigate(AppScreen.Login.route)
                     }
-
-                    productoError -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("❌ Producto no encontrado", color = MaterialTheme.colorScheme.error)
-                        }
-                    }
-
-                    else -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
-                        }
+                )
             }
+
+            productoError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("❌ Producto no encontrado", color = MaterialTheme.colorScheme.error)
+                }
+            }
+
+            else -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
+    }
 }

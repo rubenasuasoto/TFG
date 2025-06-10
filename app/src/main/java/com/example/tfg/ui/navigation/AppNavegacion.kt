@@ -40,7 +40,7 @@ fun AppNavigation(context: Context) {
     val isAdmin by authViewModel.isAdmin.collectAsState()
 
     // Determina si el usuario está logueado
-    val isUserLoggedIn = loginState is AuthState.Success
+    val isUserLoggedIn = true //loginState is AuthState.Success
 
     // Ejecuta verificación del token existente solo una vez
     LaunchedEffect(Unit) {
@@ -73,7 +73,8 @@ fun AppNavigation(context: Context) {
                 numeroProducto = numeroProducto,
                 navController = navController,
                 productoViewModel = productoViewModel,
-                onAgregarCarrito = { producto -> pedidoViewModel.agregarProducto(producto) }
+                onAgregarCarrito = { producto -> pedidoViewModel.agregarProducto(producto) },
+                isUserLoggedIn = isUserLoggedIn
             )
         }
         composable(AppScreen.Menu.route) {
@@ -91,7 +92,7 @@ fun AppNavigation(context: Context) {
 
         composable(AppScreen.Carrito.route) {
             if (isUserLoggedIn) {
-                CarritoScreen(navController, pedidoViewModel)
+                CarritoScreen(navController, pedidoViewModel, isUserLoggedIn)
             } else {
                 SnackLoginRedirect(
                     navController = navController,

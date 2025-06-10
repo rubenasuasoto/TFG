@@ -18,6 +18,8 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
     private val _productoSeleccionado = MutableStateFlow<Producto?>(null)
     val productoSeleccionado: StateFlow<Producto?> = _productoSeleccionado
 
+    private val _productoError = MutableStateFlow(false)
+    val productoError: StateFlow<Boolean> = _productoError
 
     fun fetchAllProductos() {
         viewModelScope.launch {
@@ -31,59 +33,75 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun getProductoByNumero(numero: String, onComplete: () -> Unit) {
+    fun getProductoByNumero(numero: String, onComplete: () -> Unit = {}) {
         viewModelScope.launch {
             try {
                 val producto = RetrofitClient.apiService.getProductoByNumero(numero)
                 _productoSeleccionado.value = producto
+                _productoError.value = false
             } catch (e: Exception) {
-                Log.e("ProductoVM", "Error al obtener producto", e)
+                Log.e("ProductoVM", "❌ Error al obtener producto", e)
                 _productoSeleccionado.value = null
+                _productoError.value = true
             }
+            onComplete()
+        }
+    }
 
-            fun crearProducto(producto: Producto, onResult: (Boolean) -> Unit) {
-                viewModelScope.launch {
-                    try {
-                        RetrofitClient.apiService.crearProducto(producto)
-                        fetchAllProductos()
-                        onResult(true)
-                    } catch (e: Exception) {
-                        Log.e("ProductoViewModel", "❌ Error al crear producto", e)
-                        onResult(false)
-                    }
-                }
-            }
-
-            fun updateProducto(id: String, producto: Producto, onResult: (Boolean) -> Unit) {
-                viewModelScope.launch {
-                    try {
-                        RetrofitClient.apiService.updateProducto(id, producto)
-                        fetchAllProductos()
-                        onResult(true)
-                    } catch (e: Exception) {
-                        Log.e("ProductoViewModel", "❌ Error al actualizar producto", e)
-                        onResult(false)
-                    }
-                }
-            }
-
-            fun deleteProducto(id: String, onResult: (Boolean) -> Unit) {
-                viewModelScope.launch {
-                    try {
-                        val response = RetrofitClient.apiService.deleteProducto(id)
-                        if (response.isSuccessful) {
-                            fetchAllProductos()
-                            onResult(true)
-                        } else {
-                            Log.e("ProductoViewModel", "❌ Error al eliminar producto")
-                            onResult(false)
-                        }
-                    } catch (e: Exception) {
-                        Log.e("ProductoViewModel", "❌ Excepción al eliminar producto", e)
-                        onResult(false)
-                    }
-                }
+    fun crearProducto(producto: Producto, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient.apiService.crearProducto(producto)
+                fetchAllProductos()
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("ProductoViewModel", "❌ Error al crear producto", e)
+                onResult(false)
             }
         }
     }
+
+    fun updateProducto(id: String, producto: Producto, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient.apiService.updateProducto(id, producto)
+                fetchAllProductos()
+                onResult(true)
+            } catch (e: Exception) {
+                Log.e("ProductoViewModel", "❌ Error al actualizar producto", e)
+                onResult(false)
+            }
+        }
+    }
+
+    fun deleteProducto(id: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.deleteProducto(id)
+                if (response.isSuccessful) {
+                    fetchAllProductos()
+                    onResult(true)
+                } else {
+                    Log.e("ProductoViewModel", "❌ Error al eliminar producto")
+                    onResult(false)
+                }
+            } catch (e: Exception) {
+                Log.e("ProductoViewModel", "❌ Excepción al eliminar producto", e)
+                onResult(false)
+            }
+        }
+    }
+    fun buscarProductosPorArticulo(query: String, onResult: (List<Producto>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val resultado = RetrofitClient.apiService.buscarProductosPorNombre(query)
+                onResult(resultado)
+            } catch (e: Exception) {
+                Log.e("ProductoVM", "❌ Error en búsqueda parcial", e)
+                onResult(emptyList())
+            }
+        }
+    }
+
+
 }

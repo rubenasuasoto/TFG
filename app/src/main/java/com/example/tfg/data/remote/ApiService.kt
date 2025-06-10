@@ -15,6 +15,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 // 🔹 Retrofit API Interface
@@ -93,6 +94,10 @@ interface ApiService {
 
     @DELETE("productos/{id}")
     suspend fun deleteProducto(@Path("id") id: String): Response<Unit>
+    @GET("productos/search")
+    suspend fun buscarProductosPorNombre(@Query("query") query: String): List<Producto>
+
+
 
 
 

@@ -19,7 +19,10 @@ import com.example.tfg.ui.viewModel.Factory.ProductoViewModelFactory
 import com.example.tfg.ui.viewModel.PedidoViewModel
 import com.example.tfg.ui.viewModel.ProductoViewModel
 import androidx.compose.runtime.getValue
+import com.example.tfg.ui.components.SnackLoginRedirect
+import com.example.tfg.ui.screens.CarritoScreen
 import com.example.tfg.ui.screens.DetalleProductoScreen
+import com.example.tfg.ui.screens.MenuScreen
 import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
 
 
@@ -70,9 +73,37 @@ fun AppNavigation(context: Context) {
                 numeroProducto = numeroProducto,
                 navController = navController,
                 productoViewModel = productoViewModel,
-                onAgregarCarrito = { /*producto -> pedidoViewModel.agregarProducto(producto) */}
+                onAgregarCarrito = { producto -> pedidoViewModel.agregarProducto(producto) }
             )
         }
+        composable(AppScreen.Menu.route) {
+            if (isUserLoggedIn) {
+                MenuScreen(navController, authViewModel)
+            } else {
+                SnackLoginRedirect(
+                    navController = navController,
+                    message = "Debes iniciar sesión para acceder al menú",
+                    onConfirm = { navController.navigate(AppScreen.Login.route) }
+                )
+            }
+        }
+
+
+        composable(AppScreen.Carrito.route) {
+            if (isUserLoggedIn) {
+                CarritoScreen(navController, pedidoViewModel)
+            } else {
+                SnackLoginRedirect(
+                    navController = navController,
+                    message = "Necesitas iniciar sesión para ver tu carrito",
+                    onConfirm = { navController.navigate(AppScreen.Login.route) }
+                )
+            }
+        }
+
+
+
+
 
     }
 }

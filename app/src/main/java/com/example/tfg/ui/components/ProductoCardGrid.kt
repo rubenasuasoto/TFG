@@ -51,9 +51,7 @@ fun ProductoCardGrid(
             Text(producto.articulo ?: "Sin nombre", fontWeight = FontWeight.Bold, maxLines = 1)
             Text("€${producto.precio}", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
-            Button(onClick = onAgregarCarrito, modifier = Modifier.fillMaxWidth()) {
-                Text("Agregar")
-            }
+
         }
     }
 }

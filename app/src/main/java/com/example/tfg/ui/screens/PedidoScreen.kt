@@ -1,4 +1,4 @@
-package com.example.tfg.screens
+package com.example.tfg.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,12 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.tfg.viewModel.FacturaDTO
-import com.example.tfg.viewModel.PedidoViewModel
+import com.example.tfg.ui.viewModel.PedidoViewModel
 import java.util.Date
 
 @Composable
-fun PedidoScreen(navController: NavController, viewModel: PedidoViewModel) {
+fun PedidoScreen(navController: NavController, viewModel: PedidoViewModel) {}
+/*
     val pedidos by viewModel.pedidos.collectAsState()
     val isAdmin by viewModel.isAdmin.collectAsState()
 
@@ -75,19 +75,19 @@ fun PedidoScreen(navController: NavController, viewModel: PedidoViewModel) {
                     elevation = CardDefaults.cardElevation(4.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("🛒 Nº Pedido: ${pedido.Nºpedido}", fontWeight = FontWeight.Bold)
+                        Text("🛒 Nº Pedido: ${pedido.numeroPedido }", fontWeight = FontWeight.Bold)
                         Text("📦 Artículo: ${pedido.articulo}")
-                        Text("💰 Precio: ${pedido.precio}€")
+                        Text("💰 Precio: ${pedido.precioFinal}€")
                         Text("✅ Estado: ${pedido.estado}")
-                        Text("🧾 Factura: ${pedido.factura.Nºfactura}")
-                        Text("📅 Fecha: ${pedido.factura.fecha_compra}")
-                        Text("💳 Pago: ${pedido.factura.forma_de_pago}")
+                        Text("🧾 Factura: ${pedido.factura.numeroFactura}")
+                        Text("📅 Fecha: ${pedido.factura.fecha}")
+
 
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Row(horizontalArrangement = Arrangement.SpaceBetween) {
                             Button(
-                                onClick = { navController.navigate("pedido_form/${pedido.Nºpedido}") },
+                                onClick = { navController.navigate("pedido_form/${pedido.numeroPedido}") },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                                 modifier = Modifier.weight(1f)
                             ) {
@@ -97,7 +97,7 @@ fun PedidoScreen(navController: NavController, viewModel: PedidoViewModel) {
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
-                                onClick = { pedido.Nºpedido?.let { viewModel.deletePedido(it) { /* Manejar resultado */ } } },
+                                onClick = { pedido.numeroPedido?.let { viewModel.deletePedido(it) { /* Manejar resultado */ } } },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                                 modifier = Modifier.weight(1f)
                             ) {
@@ -335,3 +335,4 @@ fun PedidoFormScreen(navController: NavController, viewModel: PedidoViewModel, p
         }
     }
 }
+*/

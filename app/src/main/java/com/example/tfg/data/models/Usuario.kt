@@ -1,4 +1,4 @@
-package com.example.tfg.models
+package com.example.tfg.data.models
 
 data class Usuario(
     val username: String,

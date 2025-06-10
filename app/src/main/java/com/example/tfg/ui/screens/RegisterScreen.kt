@@ -1,4 +1,4 @@
-package com.example.tfg.screens
+package com.example.tfg.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,10 +40,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.tfg.viewModel.AuthViewModel
-import com.example.tfg.viewModel.Direccion
+import com.example.tfg.ui.viewModel.AuthViewModel
+
 @Composable
-fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
+fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {}
+/*
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -236,3 +237,4 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
         }
     }
 }
+*/

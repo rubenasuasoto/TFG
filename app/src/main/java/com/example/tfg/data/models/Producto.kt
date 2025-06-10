@@ -1,4 +1,4 @@
-package com.example.tfg.models
+package com.example.tfg.data.models
 
 data class Producto(
     val id: String? = null,
@@ -8,6 +8,6 @@ data class Producto(
     val precio: Double,
     val stock: Int,
     val imagenUrl: String? = null,
-    val fechaCreacion: String? = null,      // ISO 8601 formato desde el backend
+    val fechaCreacion: String? = null,
     val fechaActualizacion: String? = null
 )

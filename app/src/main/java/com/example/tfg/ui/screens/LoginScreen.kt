@@ -1,4 +1,4 @@
-package com.example.tfg.screens
+package com.example.tfg.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,9 +23,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.tfg.viewModel.AuthViewModel
+import com.example.tfg.ui.viewModel.AuthViewModel
+
 @Composable
-fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
+fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {}
+/*
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val loginResponse = remember { mutableStateOf("") }
@@ -122,3 +124,4 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 }
 
 
+*/

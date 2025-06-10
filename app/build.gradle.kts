@@ -45,14 +45,17 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation (libs.ui)
     implementation (libs.androidx.material)
     implementation (libs.androidx.activity.compose)
     implementation(libs.java.jwt)
+    implementation(libs.androidx.foundation)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.ui.tooling.preview)
+    debugImplementation(libs.ui.tooling)
+
 
     // Retrofit para llamadas a API
     implementation (libs.retrofit)

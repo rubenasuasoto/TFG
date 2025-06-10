@@ -1,9 +1,11 @@
-package com.example.tfg.viewModel
+package com.example.tfg.ui.viewModel
 
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tfg.data.models.Producto
+import com.example.tfg.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

@@ -1,9 +1,9 @@
-package com.example.tfg.viewModel.Factory
+package com.example.tfg.ui.viewModel.Factory
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.tfg.viewModel.PedidoViewModel
+import com.example.tfg.ui.viewModel.PedidoViewModel
 
 
 class PedidoViewModelFactory(private val application: Application) : ViewModelProvider.Factory {

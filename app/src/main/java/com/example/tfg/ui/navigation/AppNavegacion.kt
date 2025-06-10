@@ -2,7 +2,6 @@ package com.example.tfg.ui.navigation
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,9 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tfg.ui.screens.DetalleProductoScreen
 import com.example.tfg.ui.screens.LoginScreen
-import com.example.tfg.ui.screens.PedidoScreen
 import com.example.tfg.ui.screens.RegisterScreen
 import com.example.tfg.ui.screens.home.HomeScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
@@ -22,6 +19,8 @@ import com.example.tfg.ui.viewModel.Factory.ProductoViewModelFactory
 import com.example.tfg.ui.viewModel.PedidoViewModel
 import com.example.tfg.ui.viewModel.ProductoViewModel
 import androidx.compose.runtime.getValue
+import com.example.tfg.ui.screens.DetalleProductoScreen
+import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
 
 
 @Composable
@@ -32,15 +31,25 @@ fun AppNavigation(context: Context) {
     val pedidoViewModel: PedidoViewModel = viewModel(factory = PedidoViewModelFactory(application))
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context, pedidoViewModel))
     val productoViewModel: ProductoViewModel = viewModel(factory = ProductoViewModelFactory(application))
+
+    // Observa los estados
+    val loginState by authViewModel.loginState.collectAsState()
     val isAdmin by authViewModel.isAdmin.collectAsState()
 
-    // Sincronización por si inicia directamente con token guardado
-    LaunchedEffect(isAdmin) {
-        pedidoViewModel.setAdminStatus(isAdmin)
+    // Determina si el usuario está logueado
+    val isUserLoggedIn = loginState is AuthState.Success
+
+    // Ejecuta verificación del token existente solo una vez
+    LaunchedEffect(Unit) {
         authViewModel.checkExistingToken()
     }
 
-    NavHost(navController = navController, startDestination = AppScreen.Login.route) {
+    // Asegura sincronización con PedidoViewModel
+    LaunchedEffect(isAdmin) {
+        pedidoViewModel.setAdminStatus(isAdmin)
+    }
+
+    NavHost(navController = navController, startDestination = AppScreen.Home.route) {
         composable(AppScreen.Registro.route) {
             RegisterScreen(navController, authViewModel)
         }
@@ -51,8 +60,17 @@ fun AppNavigation(context: Context) {
             HomeScreen(
                 navController,
                 productoViewModel = productoViewModel.apply { fetchAllProductos() },
-                onAddToCart = { /* tu lógica */ },
-                isUserLoggedIn = true // o según tu lógica de token
+                onAddToCart = { /* tu lógica aquí */ },
+                isUserLoggedIn = isUserLoggedIn
+            )
+        }
+        composable("${AppScreen.DetalleProducto.route}/{numeroProducto}") { backStackEntry ->
+            val numeroProducto = backStackEntry.arguments?.getString("numeroProducto") ?: ""
+            DetalleProductoScreen(
+                numeroProducto = numeroProducto,
+                navController = navController,
+                productoViewModel = productoViewModel,
+                onAgregarCarrito = { /*producto -> pedidoViewModel.agregarProducto(producto) */}
             )
         }
 

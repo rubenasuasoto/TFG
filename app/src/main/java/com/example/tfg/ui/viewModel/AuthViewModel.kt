@@ -108,9 +108,11 @@ class AuthViewModel(
             viewModelScope.launch {
                 val isAdmin = checkAdminStatus()
                 _loginState.value = AuthState.Success(savedToken, isAdmin)
+                pedidoViewModel.cargarCarrito() // 👈 Cargar carrito
             }
         }
     }
+
     fun logout() {
         TokenManager.clearToken(context)
         _loginState.value = AuthState.Idle

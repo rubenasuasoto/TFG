@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,7 +55,7 @@ fun HomeScreen(
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
         BuscadorProductos(productos = productos) { productoSeleccionado ->
-            navController.navigate("detalle/${productoSeleccionado.numeroProducto}")
+            navController.navigate("detalle_producto/${productoSeleccionado.numeroProducto}")
         }
 
 
@@ -76,7 +74,7 @@ fun HomeScreen(
             items(productos) { producto ->
                 ProductoCardGrid(
                     producto = producto,
-                    onVerDetalle = { navController.navigate("detalle/${producto.numeroProducto}") },
+                    onVerDetalle = { navController.navigate("detalle_producto/${producto.numeroProducto}") },
                     onAgregarCarrito = {
                         if (isUserLoggedIn) onAddToCart(producto)
                         else navController.navigate("login")
@@ -95,7 +93,7 @@ fun HomeScreen(
             items(recomendados) { producto ->
                 ProductoCardCarrusel(
                     producto = producto,
-                    onVerDetalle = { navController.navigate("detalle/${producto.numeroProducto}") }
+                    onVerDetalle = { navController.navigate("detalle_producto/${producto.numeroProducto}") }
                 )
             }
         }

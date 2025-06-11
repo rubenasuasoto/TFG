@@ -2,6 +2,8 @@ package com.example.tfg.data.remote
 
 import android.content.Context
 import android.util.Log
+import com.example.tfg.App
+import com.example.tfg.utils.GlobalAuthHandler
 import com.example.tfg.utils.TokenManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -28,15 +30,38 @@ object RetrofitClient {
             lock.unlock()
         }
 
-        if (!currentToken.isNullOrEmpty()) { // ✅ Solo agregar si hay token
+        if (!currentToken.isNullOrEmpty()) {
             Log.d("RetrofitClient", "🔹 Enviando token: Bearer $currentToken")
             requestBuilder.addHeader("Authorization", "Bearer $currentToken")
         } else {
             Log.d("RetrofitClient", "⚠️ No se envía token porque es null o vacío")
         }
 
-        chain.proceed(requestBuilder.build())
+        val response = chain.proceed(requestBuilder.build())
+
+        // 🔒 Detectar token expirado
+        if (response.code == 401) {
+            Log.w("RetrofitClient", "❌ Token inválido o expirado (401)")
+            token = null  // Limpia token en memoria
+
+            val safeContext = try {
+                App.context
+            } catch (e: IllegalStateException) {
+                null // o usar un contexto de prueba si estás en test
+            }
+
+            if (safeContext != null) {
+                TokenManager.clearToken(safeContext)
+            }
+
+
+            // Señal para logout global
+            GlobalAuthHandler.onUnauthorized?.invoke()
+        }
+
+        response
     }
+
 
 
 

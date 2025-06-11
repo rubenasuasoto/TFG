@@ -49,7 +49,7 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
 
 
             Text("Cambiar contraseña", modifier = Modifier.clickable {
-                // navController.navigate("cambiar_contrasena") // Si existe
+                 navController.navigate(AppScreen.Cambiarcontrasena.route)
             })
 
             Text("Cerrar sesión", modifier = Modifier.clickable {

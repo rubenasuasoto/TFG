@@ -13,7 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
@@ -37,6 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -63,6 +66,11 @@ fun AdminProductosScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Gestión de productos") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                    }
+                },
                 actions = {
                     IconButton(onClick = { productoAEditar = null; mostrarFormulario = true }) {
                         Icon(Icons.Default.Add, contentDescription = "Nuevo producto")
@@ -162,6 +170,11 @@ fun ProductoForm(
     var stock by remember { mutableStateOf(producto?.stock?.toString() ?: "") }
     var imagenUrl by remember { mutableStateOf(producto?.imagenUrl ?: "") }
 
+    // Validaciones visuales
+    var articuloError by remember { mutableStateOf(false) }
+    var precioError by remember { mutableStateOf(false) }
+    var stockError by remember { mutableStateOf(false) }
+
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Formulario de producto", style = MaterialTheme.typography.titleMedium)
 
@@ -169,30 +182,45 @@ fun ProductoForm(
 
         OutlinedTextField(
             value = articulo,
-            onValueChange = { articulo = it },
+            onValueChange = {
+                articulo = it
+                articuloError = it.isBlank()
+            },
             label = { Text("Nombre del producto") },
+            isError = articuloError,
             modifier = Modifier.fillMaxWidth()
         )
+        if (articuloError) Text("Este campo es obligatorio", color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = precio,
-            onValueChange = { precio = it },
+            onValueChange = {
+                precio = it
+                precioError = it.toDoubleOrNull()?.let { v -> v <= 0 } ?: true
+            },
             label = { Text("Precio") },
+            isError = precioError,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
+        if (precioError) Text("Precio inválido (debe ser mayor que 0)", color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = stock,
-            onValueChange = { stock = it },
+            onValueChange = {
+                stock = it
+                stockError = it.toIntOrNull()?.let { v -> v < 0 } ?: true
+            },
             label = { Text("Stock") },
+            isError = stockError,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
+        if (stockError) Text("Stock inválido (mínimo 0)", color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -206,16 +234,27 @@ fun ProductoForm(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = {
-                val nuevo = Producto(
-                    numeroProducto = producto?.numeroProducto.toString(),
-                    articulo = articulo,
-                    precio = precio.toDoubleOrNull() ?: 0.0,
-                    stock = stock.toIntOrNull() ?: 0,
-                    imagenUrl = imagenUrl
-                )
-                onGuardar(nuevo)
-            }) {
+            Button(
+                onClick = {
+                    // Revalidar antes de guardar
+                    articuloError = articulo.isBlank()
+                    precioError = precio.toDoubleOrNull()?.let { it <= 0 } ?: true
+                    stockError = stock.toIntOrNull()?.let { it < 0 } ?: true
+
+                    val esValido = !articuloError && !precioError && !stockError
+
+                    if (esValido) {
+                        val nuevo = Producto(
+                            numeroProducto = producto?.numeroProducto ?: "", // para edición
+                            articulo = articulo,
+                            precio = precio.toDouble(),
+                            stock = stock.toInt(),
+                            imagenUrl = imagenUrl.ifBlank { null }
+                        )
+                        onGuardar(nuevo)
+                    }
+                }
+            ) {
                 Text("Guardar")
             }
 
@@ -225,4 +264,3 @@ fun ProductoForm(
         }
     }
 }
-

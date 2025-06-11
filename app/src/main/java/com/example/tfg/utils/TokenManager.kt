@@ -1,6 +1,7 @@
 package com.example.tfg.utils
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 
 object TokenManager {
@@ -9,16 +10,24 @@ object TokenManager {
 
     fun saveToken(context: Context, token: String) {
         val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(TOKEN_KEY, token) }
+        prefs.edit {
+            putString(TOKEN_KEY, token)
+            Log.d("TokenManager", "🔐 Token guardado: $token")
+        }
     }
 
     fun getToken(context: Context): String? {
         val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(TOKEN_KEY, null)
+        val token = prefs.getString(TOKEN_KEY, null)
+        Log.d("TokenManager", "🔎 Token obtenido: $token")
+        return token
     }
 
     fun clearToken(context: Context) {
         val prefs: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        prefs.edit { remove(TOKEN_KEY) }
+        prefs.edit {
+            remove(TOKEN_KEY)
+            Log.d("TokenManager", "🚫 Token eliminado de preferencias")
+        }
     }
 }

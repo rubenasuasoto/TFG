@@ -20,7 +20,7 @@ data class UsuarioUpdateDTO(
     val newPassword: String?,
     val email: String?,
     val rol: String?, // Solo editable por admin
-    val direccion: Direccion
+    val direccion: Direccion?
 )
 data class Direccion(
     val calle: String,

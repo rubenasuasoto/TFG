@@ -22,9 +22,9 @@ import androidx.compose.runtime.getValue
 import com.example.tfg.ui.components.SnackLoginRedirect
 import com.example.tfg.ui.screens.CarritoScreen
 import com.example.tfg.ui.screens.DetalleProductoScreen
-import com.example.tfg.ui.screens.MenuScreen
-import com.example.tfg.ui.screens.PedidosScreen
-import com.example.tfg.ui.screens.PerfilScreen
+import com.example.tfg.ui.screens.Menu.MenuScreen
+import com.example.tfg.ui.screens.Menu.PedidosScreen
+import com.example.tfg.ui.screens.Menu.PerfilScreen
 import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
 
 

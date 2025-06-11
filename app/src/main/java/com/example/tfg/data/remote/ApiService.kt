@@ -17,7 +17,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-
+data class LoginRequest(
+    val username: String,
+    val password: String
+)
 // 🔹 Retrofit API Interface
 interface ApiService {
     // Autenticación

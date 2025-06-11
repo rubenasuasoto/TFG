@@ -83,6 +83,38 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
             }
         }
     }
+    fun finalizarCompra(onResult: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val carritoActual = carrito.value
+                if (carritoActual.isEmpty()) {
+                    onResult(false, "❌ El carrito está vacío")
+                    return@launch
+                }
+
+                val ids = carritoActual.map { it.numeroProducto }
+                val total = carritoActual.sumOf { it.precio }
+
+                val dto = PedidoDTO(
+                    productos = ids,
+                    precioFinal = total
+                )
+
+                RetrofitClient.apiService.createPedidoSelf(dto)
+
+                limpiarCarrito()
+                fetchPedidos()
+
+                onResult(true, "✅ Pedido realizado correctamente")
+            } catch (e: Exception) {
+                Log.e("PedidoVM", "❌ Error al crear pedido", e)
+                onResult(false, "❌ Error al finalizar la compra")
+            }
+        }
+    }
+
+
+
     fun setAdminStatus(admin: Boolean) {
         _isAdmin.value = admin
     }

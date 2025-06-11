@@ -3,19 +3,20 @@ package com.example.tfg.data.models
 import java.util.Date
 
 data class Pedido(
-
     val numeroPedido: String?,
-    val numeroProducto: String,
+    val productos: List<String>,
     val usuario: String?,
-    var articulo: String?,
-    var precioFinal: Double,
-    var factura: Factura,
-    var estado: String,
+    val detalles: List<ProductoDTO>,
+    val precioFinal: Double,
+    val factura: Factura,
+    val estado: String,
     val fechaCreacion: Date
 )
 data class PedidoDTO(
-    val numeroProducto: String
+    val productos: List<String>,
+    val precioFinal: Double
 )
+
 data class Factura(
 
     val numeroFactura: String,

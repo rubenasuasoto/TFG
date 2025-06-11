@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -93,15 +94,35 @@ fun PedidosScreen(
                 items(pedidos) { pedido ->
                     Card(elevation = CardDefaults.cardElevation(4.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text("Numero de pedido: ${pedido.numeroPedido}")
-                            Text("Artículo: ${pedido.articulo ?: "N/A"}", style = MaterialTheme.typography.titleMedium)
+                            Text("Pedido Nº: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Divider()
+
+                            Text("Productos:", style = MaterialTheme.typography.titleSmall)
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            pedido.detalles.forEach { producto ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(text = producto.articulo, style = MaterialTheme.typography.bodyMedium)
+                                    Text("€${producto.precio}", style = MaterialTheme.typography.bodyMedium)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Divider()
+                            Spacer(modifier = Modifier.height(4.dp))
+
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text("Estado: ", style = MaterialTheme.typography.bodyMedium)
                                 EstadoPedidoLabel(pedido.estado)
                             }
 
                             Text("Fecha: ${pedido.fechaCreacion.toString().substring(0, 10)}")
-                            Text("Total: €${pedido.precioFinal}")
+                            Text("Total: €${pedido.precioFinal}", style = MaterialTheme.typography.bodyMedium)
 
                             if (pedido.estado == "PENDIENTE") {
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -123,6 +144,7 @@ fun PedidosScreen(
                         }
                     }
                 }
+
             }
         }
     }

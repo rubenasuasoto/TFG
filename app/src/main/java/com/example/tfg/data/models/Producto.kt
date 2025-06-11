@@ -11,3 +11,8 @@ data class Producto(
     val fechaCreacion: String? = null,
     val fechaActualizacion: String? = null
 )
+data class ProductoDTO(
+    val numeroProducto: String,
+    val articulo: String,
+    val precio: Double
+)

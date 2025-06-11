@@ -3,7 +3,9 @@ package com.example.tfg.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,13 +14,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Producto
 import com.example.tfg.ui.components.BottomBarNavigation
-import com.example.tfg.ui.components.DetalleProductoView
+
+import com.example.tfg.ui.components.ProductoView
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.ProductoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetalleProductoScreen(
+fun ProductoScreen(
     numeroProducto: String,
     navController: NavHostController,
     productoViewModel: ProductoViewModel = viewModel(),
@@ -65,7 +68,7 @@ fun DetalleProductoScreen(
     ) { paddingValues ->
         when {
             productoSeleccionado != null -> {
-                DetalleProductoView(
+                ProductoView(
                     producto = productoSeleccionado!!,
                     isUserLoggedIn = isUserLoggedIn,
                     onAgregarYIrCarrito = {

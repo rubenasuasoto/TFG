@@ -9,9 +9,9 @@ import com.example.tfg.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
 class ProductoViewModel(application: Application) : AndroidViewModel(application) {
 
+    // ░░░ Estado ░░░
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos: StateFlow<List<Producto>> = _productos
 
@@ -21,6 +21,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
     private val _productoError = MutableStateFlow(false)
     val productoError: StateFlow<Boolean> = _productoError
 
+    // ░░░ Obtener productos ░░░
     fun fetchAllProductos() {
         viewModelScope.launch {
             try {
@@ -48,6 +49,19 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun buscarProductosPorArticulo(query: String, onResult: (List<Producto>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val resultado = RetrofitClient.apiService.buscarProductosPorNombre(query)
+                onResult(resultado)
+            } catch (e: Exception) {
+                Log.e("ProductoVM", "❌ Error en búsqueda parcial", e)
+                onResult(emptyList())
+            }
+        }
+    }
+
+    // ░░░ CRUD ░░░
     fun crearProducto(producto: Producto, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
@@ -91,17 +105,4 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
-    fun buscarProductosPorArticulo(query: String, onResult: (List<Producto>) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val resultado = RetrofitClient.apiService.buscarProductosPorNombre(query)
-                onResult(resultado)
-            } catch (e: Exception) {
-                Log.e("ProductoVM", "❌ Error en búsqueda parcial", e)
-                onResult(emptyList())
-            }
-        }
-    }
-
-
 }

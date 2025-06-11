@@ -39,6 +39,9 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
     var mensaje by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
 
+    var nuevaError by remember { mutableStateOf(false) }
+    var repetirError by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,26 +71,43 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
 
             OutlinedTextField(
                 value = nueva,
-                onValueChange = { nueva = it },
+                onValueChange = {
+                    nueva = it
+                    nuevaError = false
+                },
                 label = { Text("Nueva contraseña") },
+                isError = nuevaError,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
+            if (nuevaError) {
+                Text(
+                    "Debe tener al menos 8 caracteres, incluir un número y un carácter especial",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
             OutlinedTextField(
                 value = repetir,
-                onValueChange = { repetir = it },
+                onValueChange = {
+                    repetir = it
+                    repetirError = false
+                },
                 label = { Text("Repetir nueva contraseña") },
+                isError = repetirError,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
+            if (repetirError) {
+                Text("Las contraseñas no coinciden", color = MaterialTheme.colorScheme.error)
+            }
 
             Button(
                 onClick = {
-                    if (nueva != repetir) {
-                        mensaje = "❌ Las contraseñas no coinciden"
-                        return@Button
-                    }
+                    nuevaError = nueva.length < 8 || !nueva.any { it.isDigit() } || !nueva.any { !it.isLetterOrDigit() }
+                    repetirError = nueva != repetir
+
+                    if (nuevaError || repetirError) return@Button
 
                     loading = true
                     viewModel.cambiarPassword(actual, nueva) { success, msg ->

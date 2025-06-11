@@ -30,6 +30,9 @@ import com.example.tfg.ui.viewModel.AuthViewModel
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var usernameError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+
 
     val loginState by viewModel.loginState.collectAsState()
 
@@ -73,30 +76,42 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it },
+                onValueChange = {
+                    username = it
+                    usernameError = false
+                },
+                isError = usernameError,
                 label = { Text("Usuario") },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
+            if (usernameError) Text("El nombre de usuario no puede estar vacío", color = Color.Red)
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    passwordError = false
+                },
+                isError = passwordError,
                 label = { Text("Contraseña") },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
+            if (passwordError) Text("La contraseña no puede estar vacía", color = Color.Red)
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    if (username.isNotBlank() && password.isNotBlank()) {
+                    usernameError = username.isBlank()
+                    passwordError = password.isBlank()
+
+                    if (!usernameError && !passwordError) {
                         viewModel.login(username, password)
                     }
                 },

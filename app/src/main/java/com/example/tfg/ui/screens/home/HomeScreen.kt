@@ -101,7 +101,7 @@ fun HomeScreen(
                 items(recomendados) { producto ->
                     ProductoCardCarrusel(
                         producto = producto,
-                        onVerDetalle = { navController.navigate("detalle_producto/${producto.numeroProducto}") }
+                        onVerDetalle = { navController.navigate("producto/${producto.numeroProducto}") }
                     )
                 }
             }
@@ -122,7 +122,7 @@ fun HomeScreen(
                 items(productos) { producto ->
                     ProductoCardGrid(
                         producto = producto,
-                        onVerDetalle = { navController.navigate("detalle_producto/${producto.numeroProducto}") },
+                        onVerDetalle = { navController.navigate("producto/${producto.numeroProducto}") },
                         onAgregarCarrito = {
                             if (isUserLoggedIn) onAddToCart(producto)
                             else navController.navigate("login")

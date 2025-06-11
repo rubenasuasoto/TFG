@@ -47,11 +47,6 @@ interface ApiService {
     @POST("pedidos/self")
     suspend fun createPedidoSelf(@Body pedido: PedidoDTO): Pedido
 
-    @PUT("pedidos/self/{id}")
-    suspend fun updatePedidoEstadoSelf(
-        @Path("id") id: String,
-        @Body pedido: Pedido
-    ): Response<Unit>
 
 
     // 🔹 Obtener todos los pedidos (solo admin)
@@ -72,17 +67,17 @@ interface ApiService {
 
 
     // 🔹 Actualizar el estado de un pedido (Admin)
-    @PUT("pedidos/{id}")
+    @PUT("pedidos/{numeroPedido}")
     suspend fun updatePedidoEstado(
-        @Path("id") id: String,
+        @Path("numeroPedido") numeroPedido: String,
         @Body pedido: EstadoDTO
     ): Response<Unit>
 
 
 
     // 🔹 Eliminar un pedido (Admin)
-    @DELETE("pedidos/{id}")
-    suspend fun deletePedido(@Path("id") id: String): Response<Unit>
+    @DELETE("pedidos/{numeroPedido}")
+    suspend fun deletePedido(@Path("numeroPedido") numeroPedido: String): Response<Unit>
     // 🔹 Eliminar un pedido propio (Usuarios normales)
     @DELETE("pedidos/self/{numeroPedido}")
     suspend fun deletePedidoSelf(@Path("numeroPedido") numeroPedido: String): Response<Unit>

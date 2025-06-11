@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Direccion
 import com.example.tfg.data.models.UsuarioUpdateDTO
@@ -59,6 +60,11 @@ fun PerfilScreen(
     var municipio by remember { mutableStateOf("") }
     var provincia by remember { mutableStateOf("") }
     var cp by remember { mutableStateOf("") }
+
+    var emailError by remember { mutableStateOf(false) }
+    var provinciaError by remember { mutableStateOf(false) }
+
+    val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
 
     val isEditing = remember { mutableStateOf(false) }
 
@@ -99,7 +105,7 @@ fun PerfilScreen(
         ) {
             usuario?.let {
                 if (!isEditing.value) {
-                    // Valores fijos
+                    // Modo visual
                     Text("Nombre de usuario: ${it.username}", style = MaterialTheme.typography.titleMedium)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -125,6 +131,7 @@ fun PerfilScreen(
                             municipio = it.direccion.municipio
                             provincia = it.direccion.provincia
                             cp = it.direccion.cp
+                            email = it.email
                             isEditing.value = true
                         }) {
                             Icon(Icons.Default.Edit, contentDescription = "Editar dirección")
@@ -138,10 +145,15 @@ fun PerfilScreen(
                     // Modo edición
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {
+                            email = it
+                            emailError = !EMAIL_REGEX.matches(it)
+                        },
                         label = { Text("Email") },
+                        isError = emailError,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    if (emailError) Text("Email inválido", color = Color.Red)
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Divider()
@@ -165,10 +177,15 @@ fun PerfilScreen(
 
                     OutlinedTextField(
                         value = provincia,
-                        onValueChange = { provincia = it },
+                        onValueChange = {
+                            provincia = it
+                            provinciaError = it.isBlank()
+                        },
                         label = { Text("Provincia") },
+                        isError = provinciaError,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    if (provinciaError) Text("La provincia no puede estar vacía", color = Color.Red)
 
                     OutlinedTextField(
                         value = cp,
@@ -182,7 +199,18 @@ fun PerfilScreen(
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(
                             onClick = {
-                                // Guardar cambios
+                                emailError = !EMAIL_REGEX.matches(email)
+                                provinciaError = provincia.isBlank()
+
+                                val camposValidos = !emailError && !provinciaError
+
+                                if (!camposValidos) {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("❌ Corrige los errores antes de guardar")
+                                    }
+                                    return@Button
+                                }
+
                                 val dto = UsuarioUpdateDTO(
                                     currentPassword = null,
                                     newPassword = null,
@@ -202,7 +230,6 @@ fun PerfilScreen(
                                         isEditing.value = false
                                         authViewModel.cargarPerfil()
                                     }
-
                                 }
                             },
                             modifier = Modifier.weight(1f)

@@ -21,11 +21,13 @@ import com.example.tfg.ui.viewModel.ProductoViewModel
 import androidx.compose.runtime.getValue
 import com.example.tfg.ui.components.SnackLoginRedirect
 import com.example.tfg.ui.screens.CarritoScreen
-import com.example.tfg.ui.screens.DetalleProductoScreen
+
 import com.example.tfg.ui.screens.Menu.CambiarPasswordScreen
 import com.example.tfg.ui.screens.Menu.MenuScreen
 import com.example.tfg.ui.screens.Menu.PedidosScreen
 import com.example.tfg.ui.screens.Menu.PerfilScreen
+import com.example.tfg.ui.screens.ProductoScreen
+import com.example.tfg.ui.screens.admin.AdminDashboardScreen
 import com.example.tfg.ui.screens.admin.AdminPedidosScreen
 import com.example.tfg.ui.screens.admin.AdminProductosScreen
 import com.example.tfg.ui.screens.admin.AdminUsuariosScreen
@@ -75,7 +77,7 @@ fun AppNavigation(context: Context) {
         }
         composable("${AppScreen.DetalleProducto.route}/{numeroProducto}") { backStackEntry ->
             val numeroProducto = backStackEntry.arguments?.getString("numeroProducto") ?: ""
-            DetalleProductoScreen(
+            ProductoScreen(
                 numeroProducto = numeroProducto,
                 navController = navController,
                 productoViewModel = productoViewModel,
@@ -126,6 +128,15 @@ fun AppNavigation(context: Context) {
         composable(AppScreen.AdminProductos.route) {
             AdminProductosScreen(navController, productoViewModel)
         }
+        composable(AppScreen.AdminDashboard.route) {
+            AdminDashboardScreen(
+                productoViewModel = productoViewModel,
+                pedidoViewModel = pedidoViewModel,
+                authViewModel = authViewModel,
+                navController = navController
+            )
+        }
+
 
 
 

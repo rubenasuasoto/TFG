@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -39,181 +40,154 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Direccion
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
-
 @Composable
-fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
+fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordRepeat by remember { mutableStateOf("") }
-
     var calle by remember { mutableStateOf("") }
     var num by remember { mutableStateOf("") }
+    var cp by remember { mutableStateOf("") }
     var municipio by remember { mutableStateOf("") }
     var provincia by remember { mutableStateOf("") }
-    var cp by remember { mutableStateOf("") }
+
+    var usernameError by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
+    var passwordMatchError by remember { mutableStateOf(false) }
 
     val registerResponse = remember { mutableStateOf("") }
     val isLoading = remember { mutableStateOf(false) }
 
-    Scaffold { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .navigationBarsPadding()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.Person,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(80.dp)
-            )
+    val USERNAME_REGEX = Regex("^[a-zA-Z0-9._-]{3,20}$")
+    val EMAIL_REGEX = Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")
 
-            Spacer(modifier = Modifier.height(8.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Registro", style = MaterialTheme.typography.headlineMedium)
 
-            Text(
-                "Registro",
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
-            )
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = username,
+            onValueChange = {
+                username = it
+                usernameError = !USERNAME_REGEX.matches(it)
+            },
+            label = { Text("Usuario") },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
+            isError = usernameError,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (usernameError) Text("Usuario inválido. 3-20 caracteres: letras, números, '.', '-' o '_'", color = Color.Red)
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Datos de usuario", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = email,
+            onValueChange = {
+                email = it
+                emailError = !EMAIL_REGEX.matches(it)
+            },
+            label = { Text("Email") },
+            leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
+            isError = emailError,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (emailError) Text("Email inválido", color = Color.Red)
 
-                    OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Username") },
-                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
+        Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = password,
+            onValueChange = {
+                password = it
+                passwordError = it.length < 8 || !it.any { c -> c.isDigit() } || !it.any { c -> !c.isLetterOrDigit() }
+                passwordMatchError = (passwordRepeat.isNotEmpty() && password != passwordRepeat)
+            },
+            label = { Text("Contraseña") },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (passwordError) Text("Contraseña débil. Mínimo 8 caracteres, 1 número y 1 símbolo", color = Color.Red)
 
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
+        Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = passwordRepeat,
+            onValueChange = {
+                passwordRepeat = it
+                passwordMatchError = it != password
+            },
+            label = { Text("Repetir contraseña") },
+            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
+            visualTransformation = PasswordVisualTransformation(),
+            isError = passwordMatchError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (passwordMatchError) Text("Las contraseñas no coinciden", color = Color.Red)
 
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Contraseña") },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
+        Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = calle,
+            onValueChange = { calle = it },
+            label = { Text("Calle") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-                    OutlinedTextField(
-                        value = passwordRepeat,
-                        onValueChange = { passwordRepeat = it },
-                        label = { Text("Repetir contraseña") },
-                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                }
-            }
+        OutlinedTextField(
+            value = num,
+            onValueChange = { num = it },
+            label = { Text("Número") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+        OutlinedTextField(
+            value = cp,
+            onValueChange = { cp = it },
+            label = { Text("Código Postal") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Dirección", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        OutlinedTextField(
+            value = municipio,
+            onValueChange = { municipio = it },
+            label = { Text("Municipio") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = provincia,
+            onValueChange = { provincia = it },
+            label = { Text("Provincia") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-                    OutlinedTextField(
-                        value = calle,
-                        onValueChange = { calle = it },
-                        label = { Text("Calle") },
-                        leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = num,
-                        onValueChange = { num = it },
-                        label = { Text("Número") },
-                        leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = municipio,
-                        onValueChange = { municipio = it },
-                        label = { Text("Municipio") },
-                        leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = provincia,
-                        onValueChange = { provincia = it },
-                        label = { Text("Provincia") },
-                        leadingIcon = { Icon(Icons.Default.Place, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = cp,
-                        onValueChange = { cp = it },
-                        label = { Text("Código Postal") },
-                        leadingIcon = { Icon(Icons.Default.AccountBox, contentDescription = null) },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
@@ -237,40 +211,29 @@ fun RegisterScreen(navController: NavController, viewModel: AuthViewModel) {
                                 }
                             }
                         } else {
-                            registerResponse.value = "❌ Las contraseñas no coinciden."
+                            registerResponse.value = "❌ Corrige los errores antes de continuar."
                         }
                     } else {
                         registerResponse.value = "❌ Todos los campos son obligatorios."
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading.value,
-                shape = RoundedCornerShape(12.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
-                if (isLoading.value) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
-                } else {
-                    Text("Registrarse", fontSize = 18.sp)
-                }
+                if (isLoading.value) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
+                else Text("Registrarse")
             }
 
-            if (registerResponse.value.isNotBlank()) {
-                Text(
-                    text = registerResponse.value,
-                    color = if (registerResponse.value.startsWith("✅")) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 12.dp)
-                )
-            }
+        if (registerResponse.value.isNotEmpty()) {
+            Text(
+                text = registerResponse.value,
+                color = if (registerResponse.value.startsWith("✅")) Color.Green else Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(
-                onClick = { navController.navigate(AppScreen.Login.route) },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("¿Ya tienes cuenta? Inicia sesión aquí", color = MaterialTheme.colorScheme.secondary)
-            }
+        TextButton(onClick = { navController.navigate("login") }) {
+            Text("¿Ya tienes cuenta? Inicia sesión", color = MaterialTheme.colorScheme.primary)
         }
     }
 }

@@ -18,14 +18,12 @@ import retrofit2.HttpException
 import java.io.IOException
 
 
-
-
-
 class AuthViewModel(
     private val context: Context,
     private val pedidoViewModel: PedidoViewModel
 ) : ViewModel() {
 
+    // ░░░ Estados ░░░
     private val _loginState = MutableStateFlow<AuthState>(AuthState.Idle)
     val loginState: StateFlow<AuthState> = _loginState
 
@@ -38,7 +36,7 @@ class AuthViewModel(
     private val _listaUsuarios = MutableStateFlow<List<UsuarioDTO>>(emptyList())
     val listaUsuarios: StateFlow<List<UsuarioDTO>> = _listaUsuarios
 
-
+    // ░░░ Estados de autenticación ░░░
     sealed class AuthState {
         data object Idle : AuthState()
         data object Loading : AuthState()
@@ -46,6 +44,7 @@ class AuthViewModel(
         data class Error(val message: String) : AuthState()
     }
 
+    // ░░░ Login y registro ░░░
     fun login(username: String, password: String) {
         _loginState.value = AuthState.Loading
         viewModelScope.launch {
@@ -53,8 +52,7 @@ class AuthViewModel(
                 val response = RetrofitClient.apiService.login(LoginRequest(username, password))
                 if (response.token != null) {
                     RetrofitClient.updateToken(response.token, context)
-                    Log.d("AuthViewModel", "✅ Token guardado en preferencias: ${TokenManager.getToken(context)}")
-
+                    Log.d("AuthViewModel", "✅ Token guardado: ${TokenManager.getToken(context)}")
                     val isAdmin = checkAdminStatus()
                     _loginState.value = AuthState.Success(response.token, isAdmin)
                 } else {
@@ -101,18 +99,7 @@ class AuthViewModel(
         }
     }
 
-
-    fun fetchAllUsuarios() {
-        viewModelScope.launch {
-            try {
-                val usuarios = RetrofitClient.apiService.getAll()
-                _listaUsuarios.value = usuarios
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "❌ Error al obtener usuarios", e)
-            }
-        }
-    }
-
+    // ░░░ Perfil del usuario ░░░
     fun cargarPerfil() {
         viewModelScope.launch {
             try {
@@ -124,6 +111,7 @@ class AuthViewModel(
             }
         }
     }
+
     fun actualizarPerfil(dto: UsuarioUpdateDTO, onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {
@@ -166,19 +154,7 @@ class AuthViewModel(
         }
     }
 
-    private suspend fun checkAdminStatus(): Boolean {
-        return try {
-            val response = RetrofitClient.apiService.checkAdmin()
-            val isAdmin = response.isSuccessful && response.body()?.get("isAdmin") == true
-            _isAdmin.value = isAdmin
-            pedidoViewModel.setAdminStatus(isAdmin) // ✅ sincroniza con PedidoVM
-            isAdmin
-        } catch (e: Exception) {
-            _isAdmin.value = false
-            pedidoViewModel.setAdminStatus(false)
-            false
-        }
-    }
+    // ░░░ Token persistente ░░░
     fun checkExistingToken() {
         val savedToken = TokenManager.getToken(context)
         Log.d("AuthViewModel", "✅ checkExistingToken() → $savedToken")
@@ -188,7 +164,7 @@ class AuthViewModel(
             viewModelScope.launch {
                 val isAdmin = checkAdminStatus()
                 _loginState.value = AuthState.Success(savedToken, isAdmin)
-                pedidoViewModel.cargarCarrito() // 👈 Cargar carrito
+                pedidoViewModel.cargarCarrito()
             }
         }
     }
@@ -198,5 +174,29 @@ class AuthViewModel(
         _loginState.value = AuthState.Idle
     }
 
+    // ░░░ Admin ░░░
+    private suspend fun checkAdminStatus(): Boolean {
+        return try {
+            val response = RetrofitClient.apiService.checkAdmin()
+            val isAdmin = response.isSuccessful && response.body()?.get("isAdmin") == true
+            _isAdmin.value = isAdmin
+            pedidoViewModel.setAdminStatus(isAdmin)
+            isAdmin
+        } catch (e: Exception) {
+            _isAdmin.value = false
+            pedidoViewModel.setAdminStatus(false)
+            false
+        }
+    }
 
+    fun fetchAllUsuarios() {
+        viewModelScope.launch {
+            try {
+                val usuarios = RetrofitClient.apiService.getAll()
+                _listaUsuarios.value = usuarios
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "❌ Error al obtener usuarios", e)
+            }
+        }
+    }
 }

@@ -64,10 +64,16 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
                 Text("Gestión de pedidos", modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminPedidos.route)
                 })
+
                 Text("Gestión de usuarios", modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminUsuarios.route)
                 })
+
+                Text("Dashboard", modifier = Modifier.clickable {
+                    navController.navigate(AppScreen.AdminDashboard.route)
+                })
             }
+
 
             Text("Cerrar sesión", modifier = Modifier.clickable {
                 authViewModel.logout()

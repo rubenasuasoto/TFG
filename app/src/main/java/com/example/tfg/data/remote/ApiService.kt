@@ -8,6 +8,7 @@ import com.example.tfg.data.models.Producto
 import com.example.tfg.data.models.Usuario
 import com.example.tfg.data.models.UsuarioDTO
 import com.example.tfg.data.models.UsuarioUpdateDTO
+import com.example.tfg.ui.viewModel.EstadoDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -33,6 +34,9 @@ interface ApiService {
     // Usuarios
     @GET("usuarios/self")
     suspend fun getSelf(): UsuarioDTO
+    @GET("usuarios")
+    suspend fun getAll(): List<UsuarioDTO>
+
 
     @PUT("usuarios/self")
     suspend fun updateSelf(@Body dto: UsuarioUpdateDTO): Response<Unit>
@@ -71,7 +75,7 @@ interface ApiService {
     @PUT("pedidos/{id}")
     suspend fun updatePedidoEstado(
         @Path("id") id: String,
-        @Body pedido: Pedido
+        @Body pedido: EstadoDTO
     ): Response<Unit>
 
 
@@ -80,8 +84,8 @@ interface ApiService {
     @DELETE("pedidos/{id}")
     suspend fun deletePedido(@Path("id") id: String): Response<Unit>
     // 🔹 Eliminar un pedido propio (Usuarios normales)
-    @DELETE("pedidos/self/{id}")
-    suspend fun deletePedidoSelf(@Path("id") id: String): Response<Unit>
+    @DELETE("pedidos/self/{numeroPedido}")
+    suspend fun deletePedidoSelf(@Path("numeroPedido") numeroPedido: String): Response<Unit>
 
     @GET("productos")
     suspend fun getAllProductos(): List<Producto>
@@ -95,8 +99,8 @@ interface ApiService {
     @PUT("productos/{id}")
     suspend fun updateProducto(@Path("id") id: String, @Body producto: Producto): Producto
 
-    @DELETE("productos/{id}")
-    suspend fun deleteProducto(@Path("id") id: String): Response<Unit>
+    @DELETE("productos/{numeroPedido}")
+    suspend fun deleteProducto(@Path("numeroPedido") numeroPedido: String): Response<Unit>
     @GET("productos/search")
     suspend fun buscarProductosPorNombre(@Query("query") query: String): List<Producto>
 

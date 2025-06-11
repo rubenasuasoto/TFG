@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,22 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
             Text("Cambiar contraseña", modifier = Modifier.clickable {
                  navController.navigate(AppScreen.Cambiarcontrasena.route)
             })
+            if (authViewModel.isAdmin.collectAsState().value) {
+                Divider()
+                Text("ADMIN", style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text("Gestión de productos", modifier = Modifier.clickable {
+                    navController.navigate(AppScreen.AdminProductos.route)
+                })
+
+                Text("Gestión de pedidos", modifier = Modifier.clickable {
+                    navController.navigate(AppScreen.AdminPedidos.route)
+                })
+                Text("Gestión de usuarios", modifier = Modifier.clickable {
+                    navController.navigate(AppScreen.AdminUsuarios.route)
+                })
+            }
 
             Text("Cerrar sesión", modifier = Modifier.clickable {
                 authViewModel.logout()

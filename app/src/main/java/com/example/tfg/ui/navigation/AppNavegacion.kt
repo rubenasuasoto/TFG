@@ -26,6 +26,9 @@ import com.example.tfg.ui.screens.Menu.CambiarPasswordScreen
 import com.example.tfg.ui.screens.Menu.MenuScreen
 import com.example.tfg.ui.screens.Menu.PedidosScreen
 import com.example.tfg.ui.screens.Menu.PerfilScreen
+import com.example.tfg.ui.screens.admin.AdminPedidosScreen
+import com.example.tfg.ui.screens.admin.AdminProductosScreen
+import com.example.tfg.ui.screens.admin.AdminUsuariosScreen
 import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
 
 
@@ -113,6 +116,18 @@ fun AppNavigation(context: Context) {
         composable(AppScreen.Cambiarcontrasena.route) {
             CambiarPasswordScreen(navController, authViewModel)
         }
+        composable(AppScreen.AdminUsuarios.route) {
+            AdminUsuariosScreen(navController, authViewModel)
+        }
+        composable(AppScreen.AdminPedidos.route) {
+            AdminPedidosScreen(navController, pedidoViewModel)
+        }
+
+        composable(AppScreen.AdminProductos.route) {
+            AdminProductosScreen(navController, productoViewModel)
+        }
+
+
 
 
 

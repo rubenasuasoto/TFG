@@ -10,6 +10,10 @@ sealed class AppScreen(val route: String) {
     data object Perfil : AppScreen("perfil")
     data object Pedidos : AppScreen("pedidos")
     data object Cambiarcontrasena : AppScreen("cambiar_contrasena")
+    data object AdminProductos : AppScreen("admin_productos")
+    data object AdminPedidos : AppScreen("admin_pedidos")
+    data object AdminUsuarios : AppScreen("admin_usuarios")
+
 
 
 }

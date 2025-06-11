@@ -12,6 +12,10 @@ import com.example.tfg.data.remote.RetrofitClient
 import com.example.tfg.utils.CarritoManager
 import kotlinx.coroutines.flow.MutableStateFlow
 
+data class EstadoDTO(
+    val estado: String
+)
+
 
 class PedidoViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -24,20 +28,34 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
     private val _carrito = MutableStateFlow<List<Producto>>(emptyList())
     val carrito: StateFlow<List<Producto>> = _carrito
 
+    private val _pedidosAdmin = MutableStateFlow<List<Pedido>>(emptyList())
+    val pedidosAdmin: StateFlow<List<Pedido>> = _pedidosAdmin
+
     fun fetchPedidos() {
         viewModelScope.launch {
             try {
-                _pedidos.value = if (_isAdmin.value) {
-                    RetrofitClient.apiService.getAllPedidos()
-                } else {
+
                     RetrofitClient.apiService.getUserPedidos()
-                }
+
             } catch (e: Exception) {
                 Log.e("PedidoVM", "Error al obtener pedidos", e)
                 _pedidos.value = emptyList()
             }
         }
     }
+
+
+    fun fetchAllPedidosAdmin() {
+        viewModelScope.launch {
+            try {
+                val resultado = RetrofitClient.apiService.getAllPedidos()
+                _pedidosAdmin.value = resultado
+            } catch (e: Exception) {
+                Log.e("PedidoVM", "❌ Error al obtener pedidos admin", e)
+            }
+        }
+    }
+
 
     fun createPedido(pedido: PedidoDTO, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
@@ -68,10 +86,10 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-    fun cancelarPedido(id: String, onResult: (Boolean) -> Unit) {
+    fun cancelarPedido(numeroPedido: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.deletePedidoSelf(id)
+                val response = RetrofitClient.apiService.deletePedidoSelf(numeroPedido)
                 if (response.isSuccessful) {
                     fetchPedidos()
                     onResult(true)
@@ -83,6 +101,28 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
             }
         }
     }
+    fun cambiarEstadoPedido(numeroPedido: String, nuevoEstado: String) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient.apiService.updatePedidoEstado(numeroPedido, EstadoDTO(nuevoEstado))
+                fetchAllPedidosAdmin()
+            } catch (e: Exception) {
+                Log.e("PedidoVM", "❌ Error al cambiar estado", e)
+            }
+        }
+    }
+
+    fun eliminarPedidoAdmin(numeroPedido: String) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient.apiService.deletePedido(numeroPedido)
+                fetchAllPedidosAdmin()
+            } catch (e: Exception) {
+                Log.e("PedidoVM", "❌ Error al eliminar pedido", e)
+            }
+        }
+    }
+
     fun finalizarCompra(onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {

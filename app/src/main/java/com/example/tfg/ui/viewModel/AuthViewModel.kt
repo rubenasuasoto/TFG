@@ -35,6 +35,10 @@ class AuthViewModel(
     private val _usuarioActual = MutableStateFlow<UsuarioDTO?>(null)
     val usuarioActual: StateFlow<UsuarioDTO?> = _usuarioActual
 
+    private val _listaUsuarios = MutableStateFlow<List<UsuarioDTO>>(emptyList())
+    val listaUsuarios: StateFlow<List<UsuarioDTO>> = _listaUsuarios
+
+
     sealed class AuthState {
         data object Idle : AuthState()
         data object Loading : AuthState()
@@ -96,6 +100,19 @@ class AuthViewModel(
             }
         }
     }
+
+
+    fun fetchAllUsuarios() {
+        viewModelScope.launch {
+            try {
+                val usuarios = RetrofitClient.apiService.getAll()
+                _listaUsuarios.value = usuarios
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "❌ Error al obtener usuarios", e)
+            }
+        }
+    }
+
     fun cargarPerfil() {
         viewModelScope.launch {
             try {

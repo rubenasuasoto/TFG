@@ -76,6 +76,9 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
                 Text("Dashboard", modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminDashboard.route)
                 })
+                Text("Personalización", modifier = Modifier.clickable {
+                    navController.navigate(AppScreen.AdminPersonalization.route)
+                })
             }
 
 

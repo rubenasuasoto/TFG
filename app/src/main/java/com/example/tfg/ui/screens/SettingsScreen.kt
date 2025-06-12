@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -22,6 +25,7 @@ import com.example.tfg.ui.viewModel.AppSettingsViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,13 +61,30 @@ fun SettingsScreen(
                 Switch(checked = isDark, onCheckedChange = { settingsViewModel.toggleDarkTheme() })
             }
 
-            Text("Tamaño de letra: ${"%.1f".format(scale)}x")
-            Slider(
-                value = scale,
-                onValueChange = { settingsViewModel.setFontScale(it) },
-                valueRange = 0.85f..1.5f,
-                steps = 5
+            Text("Tamaño de letra")
+
+            val opciones = listOf(
+                "Pequeño" to 0.85f,
+                "Medio" to 1.0f,
+                "Grande" to 1.25f
             )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                opciones.forEach { (label, value) ->
+                    val seleccionado = scale == value
+                    OutlinedButton(
+                        onClick = { settingsViewModel.setFontScale(value) },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (seleccionado) MaterialTheme.colorScheme.primary.copy(
+                                alpha = 0.15f
+                            )
+                            else Color.Transparent
+                        )
+                    ) {
+                        Text(label)
+                    }
+                }
+            }
         }
     }
 }

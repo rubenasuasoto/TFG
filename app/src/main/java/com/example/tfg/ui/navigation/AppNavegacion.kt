@@ -20,6 +20,7 @@ import com.example.tfg.ui.viewModel.PedidoViewModel
 import com.example.tfg.ui.viewModel.ProductoViewModel
 import androidx.compose.runtime.getValue
 import com.example.tfg.ui.components.SnackLoginRedirect
+import com.example.tfg.ui.screens.AdminPersonalizationScreen
 import com.example.tfg.ui.screens.CarritoScreen
 
 import com.example.tfg.ui.screens.Menu.CambiarPasswordScreen
@@ -27,11 +28,14 @@ import com.example.tfg.ui.screens.Menu.MenuScreen
 import com.example.tfg.ui.screens.Menu.PedidosScreen
 import com.example.tfg.ui.screens.Menu.PerfilScreen
 import com.example.tfg.ui.screens.ProductoScreen
+import com.example.tfg.ui.screens.SettingsScreen
 import com.example.tfg.ui.screens.admin.AdminDashboardScreen
 import com.example.tfg.ui.screens.admin.AdminPedidosScreen
 import com.example.tfg.ui.screens.admin.AdminProductosScreen
 import com.example.tfg.ui.screens.admin.AdminUsuariosScreen
+import com.example.tfg.ui.viewModel.AppSettingsViewModel
 import com.example.tfg.ui.viewModel.AuthViewModel.AuthState
+import com.example.tfg.ui.viewModel.GlobalStyleViewModel
 
 
 @Composable
@@ -42,6 +46,8 @@ fun AppNavigation(context: Context) {
     val pedidoViewModel: PedidoViewModel = viewModel(factory = PedidoViewModelFactory(application))
     val authViewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(context, pedidoViewModel))
     val productoViewModel: ProductoViewModel = viewModel(factory = ProductoViewModelFactory(application))
+    val settingsViewModel: AppSettingsViewModel = viewModel()
+    val globalStyleViewModel: GlobalStyleViewModel = viewModel()
 
     // Observa los estados
     val loginState by authViewModel.loginState.collectAsState()
@@ -135,6 +141,15 @@ fun AppNavigation(context: Context) {
                 authViewModel = authViewModel,
                 navController = navController
             )
+        }
+        composable(AppScreen.Settings.route) {
+            SettingsScreen(navController,settingsViewModel)
+
+
+        }
+        composable(AppScreen.AdminPersonalization.route) {
+            AdminPersonalizationScreen(navController, globalStyleViewModel
+            , settingsViewModel)
         }
 
 

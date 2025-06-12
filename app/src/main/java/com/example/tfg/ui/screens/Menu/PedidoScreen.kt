@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,14 +26,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -93,6 +100,8 @@ fun PedidosScreen(
 
             LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(pedidos) { pedido ->
+                    var showFactura by remember { mutableStateOf(false) }
+
                     Card(elevation = CardDefaults.cardElevation(4.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text("Pedido Nº: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
@@ -125,6 +134,19 @@ fun PedidosScreen(
                             Text("Fecha: ${pedido.fechaCreacion.toString().substring(0, 10)}")
                             Text("Total: €${pedido.precioFinal}", style = MaterialTheme.typography.bodyMedium)
 
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            // Botón para ver factura
+                            OutlinedButton(
+                                onClick = { showFactura = true },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Info, contentDescription = "Factura")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Ver factura")
+                            }
+
+                            // Botón de cancelar si es pendiente
                             if (pedido.estado == "PENDIENTE") {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
@@ -142,10 +164,27 @@ fun PedidosScreen(
                                     Text("Cancelar pedido")
                                 }
                             }
+
+                            if (showFactura) {
+                                AlertDialog(
+                                    onDismissRequest = { showFactura = false },
+                                    confirmButton = {
+                                        TextButton(onClick = { showFactura = false }) {
+                                            Text("Cerrar")
+                                        }
+                                    },
+                                    title = { Text("Factura") },
+                                    text = {
+                                        Column {
+                                            Text("Nº Factura: ${pedido.factura.numeroFactura}")
+                                            Text("Fecha: ${pedido.factura.fecha.toString().substring(0, 10)}")
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }
-
             }
         }
     }
@@ -178,4 +217,5 @@ fun EstadoPedidoLabel(estado: String) {
         )
     }
 }
+
 

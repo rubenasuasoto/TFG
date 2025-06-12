@@ -12,19 +12,17 @@ import androidx.navigation.NavHostController
 import com.example.tfg.ui.components.BottomBarNavigation
 import com.example.tfg.ui.viewModel.AuthViewModel
 import com.example.tfg.ui.navigation.AppScreen
+import com.example.tfg.utils.Strings
 
 @Composable
 fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
     Scaffold(
-        bottomBar = { BottomBarNavigation(
-            navController = navController,
-            onCarritoClick = {
-                navController.navigate(AppScreen.Carrito.route)
-            },
-            onMenuClick = {
-                navController.navigate(AppScreen.Menu.route)
-            }
-        )
+        bottomBar = {
+            BottomBarNavigation(
+                navController = navController,
+                onCarritoClick = { navController.navigate(AppScreen.Carrito.route) },
+                onMenuClick = { navController.navigate(AppScreen.Menu.route) }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -35,24 +33,23 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            Text("Menú de Opciones", style = MaterialTheme.typography.titleLarge)
+            Text(Strings.menuOpciones, style = MaterialTheme.typography.titleLarge)
 
             Divider()
 
-            Text("Perfil", modifier = Modifier.clickable {
+            Text(Strings.perfil, modifier = Modifier.clickable {
                 navController.navigate(AppScreen.Perfil.route)
             })
 
-
-            Text("Pedidos", modifier = Modifier.clickable {
+            Text(Strings.pedidos, modifier = Modifier.clickable {
                 navController.navigate(AppScreen.Pedidos.route)
             })
 
-
-            Text("Cambiar contraseña", modifier = Modifier.clickable {
-                 navController.navigate(AppScreen.Cambiarcontrasena.route)
+            Text(Strings.cambiarPasswordTitulo, modifier = Modifier.clickable {
+                navController.navigate(AppScreen.Cambiarcontrasena.route)
             })
-            Text("Ajustes", modifier = Modifier.clickable {
+
+            Text(Strings.ajustes, modifier = Modifier.clickable {
                 navController.navigate(AppScreen.Settings.route)
             })
 
@@ -61,33 +58,37 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
                 Text("ADMIN", style = MaterialTheme.typography.titleSmall)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text("Gestión de productos", modifier = Modifier.clickable {
+                Text(Strings.adminGestionProductos, modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminProductos.route)
                 })
 
-                Text("Gestión de pedidos", modifier = Modifier.clickable {
+                Text(Strings.adminGestionPedidos, modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminPedidos.route)
                 })
 
-                Text("Gestión de usuarios", modifier = Modifier.clickable {
+                Text(Strings.adminGestionUsuarios, modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminUsuarios.route)
                 })
 
-                Text("Dashboard", modifier = Modifier.clickable {
+                Text(Strings.adminDashboard, modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminDashboard.route)
                 })
-                Text("Personalización", modifier = Modifier.clickable {
+
+                Text(Strings.adminPersonalizacion, modifier = Modifier.clickable {
                     navController.navigate(AppScreen.AdminPersonalization.route)
                 })
             }
 
-
-            Text("Cerrar sesión", modifier = Modifier.clickable {
-                authViewModel.logout()
-                navController.navigate(AppScreen.Login.route) {
-                    popUpTo(0) // Elimina el backstack
-                }
-            }, color = MaterialTheme.colorScheme.error)
+            Text(
+                Strings.cerrarSesion,
+                modifier = Modifier.clickable {
+                    authViewModel.logout()
+                    navController.navigate(AppScreen.Login.route) {
+                        popUpTo(0)
+                    }
+                },
+                color = MaterialTheme.colorScheme.error
+            )
         }
     }
 }

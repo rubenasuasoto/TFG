@@ -3,7 +3,9 @@ package com.example.tfg.ui.viewModel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.tfg.utils.Idioma
 import com.example.tfg.utils.SettingsDataStore
+import com.example.tfg.utils.Strings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,8 +18,20 @@ class AppSettingsViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _fontScale = MutableStateFlow(1.0f)
     val fontScale: StateFlow<Float> = _fontScale
+    private val _idioma = MutableStateFlow(Idioma.ESP)
+    val idioma: StateFlow<Idioma> = _idioma
+
 
     init {
+
+
+        viewModelScope.launch {
+                SettingsDataStore.observeIdioma(context).collect {
+                    Strings.idioma = it
+                    _idioma.value = it
+                }
+        }
+
         viewModelScope.launch {
             SettingsDataStore.observeTheme(context).collect { _isDarkTheme.value = it }
         }
@@ -38,6 +52,11 @@ class AppSettingsViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             SettingsDataStore.saveFontScale(context, scale)
             _fontScale.value = scale
+        }
+    }
+    fun setIdioma(nuevo: Idioma) {
+        viewModelScope.launch {
+            SettingsDataStore.saveIdioma(context, nuevo)
         }
     }
 }

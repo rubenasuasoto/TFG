@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tfg.ui.viewModel.AuthViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,10 +31,10 @@ fun AdminUsuariosScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestión de usuarios") },
+                title = { Text(Strings.adminUsuariosTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -48,7 +49,7 @@ fun AdminUsuariosScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Buscar por nombre o email") },
+                label = { Text(Strings.buscarUsuario) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -62,16 +63,16 @@ fun AdminUsuariosScreen(
 
             if (filtrados.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No se encontraron usuarios.")
+                    Text(Strings.usuariosNoEncontrados)
                 }
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(filtrados) { usuario ->
                         Card(modifier = Modifier.fillMaxWidth()) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                Text("Usuario: ${usuario.username}", style = MaterialTheme.typography.titleMedium)
-                                Text("Email: ${usuario.email}")
-                                Text("Rol: ${usuario.rol}")
+                                Text("${Strings.usuario}: ${usuario.username}", style = MaterialTheme.typography.titleMedium)
+                                Text("${Strings.email}: ${usuario.email}")
+                                Text("${Strings.rol}: ${usuario.rol}")
                             }
                         }
                     }

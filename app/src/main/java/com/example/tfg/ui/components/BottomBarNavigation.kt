@@ -13,6 +13,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.tfg.ui.navigation.AppScreen
 import androidx.compose.runtime.getValue
+import com.example.tfg.utils.Strings
+
 @Composable
 fun BottomBarNavigation(
     navController: NavController,
@@ -24,14 +26,14 @@ fun BottomBarNavigation(
     val contentColor = contentColorFor(primary)
 
     val items = listOf(
-        BottomNavItem("Carrito", Icons.Default.ShoppingCart, AppScreen.Carrito.route, onCarritoClick),
-        BottomNavItem("Inicio", Icons.Default.Home, AppScreen.Home.route, onClick = {
+        BottomNavItem(Strings.bottomCarrito, Icons.Default.ShoppingCart, AppScreen.Carrito.route, onCarritoClick),
+        BottomNavItem(Strings.bottomInicio, Icons.Default.Home, AppScreen.Home.route, onClick = {
             navController.navigate(AppScreen.Home.route) {
                 popUpTo(AppScreen.Home.route) { inclusive = true }
                 launchSingleTop = true
             }
         }),
-        BottomNavItem("Menú", Icons.Default.Menu, AppScreen.Menu.route, onMenuClick)
+        BottomNavItem(Strings.bottomMenu, Icons.Default.Menu, AppScreen.Menu.route, onMenuClick)
     )
 
     NavigationBar(containerColor = primary) {
@@ -46,12 +48,13 @@ fun BottomBarNavigation(
                     unselectedIconColor = contentColor,
                     selectedTextColor = contentColor,
                     unselectedTextColor = contentColor,
-                    indicatorColor = Color.Transparent //  elimina sombreado de selección
+                    indicatorColor = Color.Transparent // elimina sombreado de selección
                 )
             )
         }
     }
 }
+
 
 
 @Composable

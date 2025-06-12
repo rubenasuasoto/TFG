@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
 
 @Composable
 fun FilaColores(
@@ -30,7 +31,7 @@ fun FilaColores(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 fila.forEach { hex ->
-                    val color = Color(android.graphics.Color.parseColor(hex))
+                    val color = Color(hex.toColorInt())
                     val selected = hex.equals(actual, ignoreCase = true)
 
                     Box(

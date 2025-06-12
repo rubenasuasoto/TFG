@@ -46,6 +46,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Producto
 import com.example.tfg.ui.viewModel.ProductoViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,15 +66,15 @@ fun AdminProductosScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestión de productos") },
+                title = { Text(Strings.adminProductosTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 },
                 actions = {
                     IconButton(onClick = { productoAEditar = null; mostrarFormulario = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Nuevo producto")
+                        Icon(Icons.Default.Add, contentDescription = Strings.nuevo)
                     }
                 }
             )
@@ -88,7 +89,7 @@ fun AdminProductosScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Buscar producto") },
+                label = { Text(Strings.buscarProducto) },
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
             )
@@ -106,9 +107,9 @@ fun AdminProductosScreen(
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text(producto.articulo ?: "Sin nombre", style = MaterialTheme.typography.titleMedium)
-                            Text("Precio: €${producto.precio}")
-                            Text("Stock: ${producto.stock}")
+                            Text(producto.articulo ?: Strings.sinNombre, style = MaterialTheme.typography.titleMedium)
+                            Text(" ${producto.precio}")
+                            Text(" ${producto.stock}")
 
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,7 +121,7 @@ fun AdminProductosScreen(
                                 }) {
                                     Icon(Icons.Default.Edit, contentDescription = null)
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Editar")
+                                    Text(Strings.editar)
                                 }
 
                                 OutlinedButton(onClick = {
@@ -130,7 +131,7 @@ fun AdminProductosScreen(
                                 }) {
                                     Icon(Icons.Default.Delete, contentDescription = null)
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Eliminar")
+                                    Text(Strings.eliminar)
                                 }
                             }
                         }
@@ -146,7 +147,7 @@ fun AdminProductosScreen(
                 ProductoForm(
                     producto = productoAEditar,
                     onGuardar = { producto ->
-                        if (producto.numeroProducto != null) {
+                        if (producto.numeroProducto.isNotEmpty()) {
                             productoViewModel.updateProducto(producto.numeroProducto, producto) {}
                         } else {
                             productoViewModel.crearProducto(producto) {}
@@ -170,13 +171,12 @@ fun ProductoForm(
     var stock by remember { mutableStateOf(producto?.stock?.toString() ?: "") }
     var imagenUrl by remember { mutableStateOf(producto?.imagenUrl ?: "") }
 
-    // Validaciones visuales
     var articuloError by remember { mutableStateOf(false) }
     var precioError by remember { mutableStateOf(false) }
     var stockError by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Formulario de producto", style = MaterialTheme.typography.titleMedium)
+        Text(Strings.formularioProducto, style = MaterialTheme.typography.titleMedium)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -186,11 +186,11 @@ fun ProductoForm(
                 articulo = it
                 articuloError = it.isBlank()
             },
-            label = { Text("Nombre del producto") },
+            label = { Text(Strings.nombreProducto) },
             isError = articuloError,
             modifier = Modifier.fillMaxWidth()
         )
-        if (articuloError) Text("Este campo es obligatorio", color = Color.Red)
+        if (articuloError) Text(Strings.campoObligatorio, color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -200,12 +200,12 @@ fun ProductoForm(
                 precio = it
                 precioError = it.toDoubleOrNull()?.let { v -> v <= 0 } ?: true
             },
-            label = { Text("Precio") },
+            label = { Text(Strings.precio) },
             isError = precioError,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        if (precioError) Text("Precio inválido (debe ser mayor que 0)", color = Color.Red)
+        if (precioError) Text(Strings.precioInvalido, color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -215,51 +215,48 @@ fun ProductoForm(
                 stock = it
                 stockError = it.toIntOrNull()?.let { v -> v < 0 } ?: true
             },
-            label = { Text("Stock") },
+            label = { Text(Strings.stock) },
             isError = stockError,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        if (stockError) Text("Stock inválido (mínimo 0)", color = Color.Red)
+        if (stockError) Text(Strings.stockInvalido, color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = imagenUrl,
             onValueChange = { imagenUrl = it },
-            label = { Text("URL de la imagen") },
+            label = { Text(Strings.urlImagen) },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(
-                onClick = {
-                    // Revalidar antes de guardar
-                    articuloError = articulo.isBlank()
-                    precioError = precio.toDoubleOrNull()?.let { it <= 0 } ?: true
-                    stockError = stock.toIntOrNull()?.let { it < 0 } ?: true
+            Button(onClick = {
+                articuloError = articulo.isBlank()
+                precioError = precio.toDoubleOrNull()?.let { it <= 0 } ?: true
+                stockError = stock.toIntOrNull()?.let { it < 0 } ?: true
 
-                    val esValido = !articuloError && !precioError && !stockError
+                val esValido = !articuloError && !precioError && !stockError
 
-                    if (esValido) {
-                        val nuevo = Producto(
-                            numeroProducto = producto?.numeroProducto ?: "", // para edición
-                            articulo = articulo,
-                            precio = precio.toDouble(),
-                            stock = stock.toInt(),
-                            imagenUrl = imagenUrl.ifBlank { null }
-                        )
-                        onGuardar(nuevo)
-                    }
+                if (esValido) {
+                    val nuevo = Producto(
+                        numeroProducto = producto?.numeroProducto ?: "",
+                        articulo = articulo,
+                        precio = precio.toDouble(),
+                        stock = stock.toInt(),
+                        imagenUrl = imagenUrl.ifBlank { null }
+                    )
+                    onGuardar(nuevo)
                 }
-            ) {
-                Text("Guardar")
+            }) {
+                Text(Strings.guardar)
             }
 
             OutlinedButton(onClick = onCancelar) {
-                Text("Cancelar")
+                Text(Strings.cancelar)
             }
         }
     }

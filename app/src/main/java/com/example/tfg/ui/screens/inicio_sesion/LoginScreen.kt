@@ -25,14 +25,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
-
+import com.example.tfg.utils.Strings
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var usernameError by remember { mutableStateOf(false) }
     var passwordError by remember { mutableStateOf(false) }
-
 
     val loginState by viewModel.loginState.collectAsState()
 
@@ -67,7 +66,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                "Iniciar Sesión",
+                Strings.loginTitulo,
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary
             )
@@ -81,12 +80,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                     usernameError = false
                 },
                 isError = usernameError,
-                label = { Text("Usuario") },
+                label = { Text(Strings.loginUsuario) },
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            if (usernameError) Text("El nombre de usuario no puede estar vacío", color = Color.Red)
+            if (usernameError) Text(Strings.loginErrorUsuario, color = Color.Red)
+
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
@@ -96,13 +96,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                     passwordError = false
                 },
                 isError = passwordError,
-                label = { Text("Contraseña") },
+                label = { Text(Strings.loginPassword) },
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-            if (passwordError) Text("La contraseña no puede estar vacía", color = Color.Red)
+            if (passwordError) Text(Strings.loginErrorPassword, color = Color.Red)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -128,7 +128,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Iniciar Sesión", fontSize = 18.sp)
+                    Text(Strings.loginTitulo, fontSize = 18.sp)
                 }
             }
 
@@ -145,10 +145,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             TextButton(onClick = {
                 navController.navigate(AppScreen.Registro.route)
             }) {
-                Text("¿No tienes cuenta? Regístrate aquí")
+                Text(Strings.loginNoCuenta)
             }
         }
     }
 }
-
-

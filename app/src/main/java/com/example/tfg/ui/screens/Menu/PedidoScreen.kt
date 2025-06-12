@@ -46,6 +46,7 @@ import androidx.navigation.NavHostController
 import com.example.tfg.ui.components.BottomBarNavigation
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.PedidoViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +64,10 @@ fun PedidosScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mis pedidos") },
+                title = { Text(Strings.tituloMisPedidos) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -93,7 +94,7 @@ fun PedidosScreen(
         ) {
             if (pedidos.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No tienes pedidos aún.")
+                    Text(Strings.pedidosVacio)
                 }
                 return@Column
             }
@@ -104,12 +105,12 @@ fun PedidosScreen(
 
                     Card(elevation = CardDefaults.cardElevation(4.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text("Pedido Nº: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
+                            Text("${Strings.pedidoNumero}: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Divider()
 
-                            Text("Productos:", style = MaterialTheme.typography.titleSmall)
+                            Text(Strings.productos, style = MaterialTheme.typography.titleSmall)
                             Spacer(modifier = Modifier.height(4.dp))
 
                             pedido.detalles.forEach { producto ->
@@ -117,7 +118,7 @@ fun PedidosScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Text(text = producto.articulo, style = MaterialTheme.typography.bodyMedium)
+                                    Text(producto.articulo, style = MaterialTheme.typography.bodyMedium)
                                     Text("€${producto.precio}", style = MaterialTheme.typography.bodyMedium)
                                 }
                             }
@@ -127,26 +128,24 @@ fun PedidosScreen(
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Estado: ", style = MaterialTheme.typography.bodyMedium)
+                                Text("${Strings.estado}: ", style = MaterialTheme.typography.bodyMedium)
                                 EstadoPedidoLabel(pedido.estado)
                             }
 
-                            Text("Fecha: ${pedido.fechaCreacion.toString().substring(0, 10)}")
-                            Text("Total: €${pedido.precioFinal}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${Strings.fecha}: ${pedido.fechaCreacion.toString().substring(0, 10)}")
+                            Text("${Strings.total}: €${pedido.precioFinal}", style = MaterialTheme.typography.bodyMedium)
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            // Botón para ver factura
                             OutlinedButton(
                                 onClick = { showFactura = true },
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(Icons.Default.Info, contentDescription = "Factura")
+                                Icon(Icons.Default.Info, contentDescription = Strings.verFactura)
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Ver factura")
+                                Text(Strings.verFactura)
                             }
 
-                            // Botón de cancelar si es pendiente
                             if (pedido.estado == "PENDIENTE") {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Button(
@@ -161,7 +160,7 @@ fun PedidosScreen(
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text("Cancelar pedido")
+                                    Text(Strings.cancelarPedido)
                                 }
                             }
 
@@ -170,14 +169,14 @@ fun PedidosScreen(
                                     onDismissRequest = { showFactura = false },
                                     confirmButton = {
                                         TextButton(onClick = { showFactura = false }) {
-                                            Text("Cerrar")
+                                            Text(Strings.cerrar)
                                         }
                                     },
-                                    title = { Text("Factura") },
+                                    title = { Text(Strings.factura) },
                                     text = {
                                         Column {
-                                            Text("Nº Factura: ${pedido.factura.numeroFactura}")
-                                            Text("Fecha: ${pedido.factura.fecha.toString().substring(0, 10)}")
+                                            Text("${Strings.numeroFactura}: ${pedido.factura.numeroFactura}")
+                                            Text("${Strings.fecha}: ${pedido.factura.fecha.toString().substring(0, 10)}")
                                         }
                                     }
                                 )
@@ -189,6 +188,7 @@ fun PedidosScreen(
         }
     }
 }
+
 @Composable
 fun EstadoPedidoLabel(estado: String) {
     val color = when (estado.uppercase()) {
@@ -199,9 +199,9 @@ fun EstadoPedidoLabel(estado: String) {
     }
 
     val texto = when (estado.uppercase()) {
-        "ENTREGADO" -> "Entregado"
-        "PENDIENTE" -> "Pendiente"
-        "CANCELADO" -> "Cancelado"
+        "ENTREGADO" -> Strings.estadoEntregado
+        "PENDIENTE" -> Strings.estadoPendiente
+        "CANCELADO" -> Strings.estadoCancelado
         else -> estado
     }
 
@@ -217,5 +217,3 @@ fun EstadoPedidoLabel(estado: String) {
         )
     }
 }
-
-

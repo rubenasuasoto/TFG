@@ -49,6 +49,8 @@ import androidx.navigation.NavHostController
 import com.example.tfg.data.models.Direccion
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
+import com.example.tfg.utils.Strings
+
 @Composable
 fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
     var username by remember { mutableStateOf("") }
@@ -79,8 +81,7 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Registro", style = MaterialTheme.typography.headlineMedium)
-
+        Text(Strings.registroTitulo, style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
@@ -89,12 +90,11 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
                 username = it
                 usernameError = !USERNAME_REGEX.matches(it)
             },
-            label = { Text("Usuario") },
+            label = { Text(Strings.registroUsuario) },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
             isError = usernameError,
             modifier = Modifier.fillMaxWidth()
         )
-        if (usernameError) Text("Usuario inválido. 3-20 caracteres: letras, números, '.', '-' o '_'", color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -104,12 +104,11 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
                 email = it
                 emailError = !EMAIL_REGEX.matches(it)
             },
-            label = { Text("Email") },
+            label = { Text(Strings.registroEmail) },
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
             isError = emailError,
             modifier = Modifier.fillMaxWidth()
         )
-        if (emailError) Text("Email inválido", color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -120,14 +119,13 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
                 passwordError = it.length < 8 || !it.any { c -> c.isDigit() } || !it.any { c -> !c.isLetterOrDigit() }
                 passwordMatchError = (passwordRepeat.isNotEmpty() && password != passwordRepeat)
             },
-            label = { Text("Contraseña") },
+            label = { Text(Strings.registroPassword) },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordError,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
-        if (passwordError) Text("Contraseña débil. Mínimo 8 caracteres, 1 número y 1 símbolo", color = Color.Red)
+        if (passwordError) Text(Strings.registroErrorPassword, color = Color.Red)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -137,92 +135,63 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
                 passwordRepeat = it
                 passwordMatchError = it != password
             },
-            label = { Text("Repetir contraseña") },
+            label = { Text(Strings.registroRepetirPassword) },
             leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             visualTransformation = PasswordVisualTransformation(),
             isError = passwordMatchError,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier.fillMaxWidth()
         )
-        if (passwordMatchError) Text("Las contraseñas no coinciden", color = Color.Red)
+        if (passwordMatchError) Text(Strings.registroErrorCoinciden, color = Color.Red)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = calle,
-            onValueChange = { calle = it },
-            label = { Text("Calle") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        OutlinedTextField(value = calle, onValueChange = { calle = it }, label = { Text(Strings.registroCalle) }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = num,
-            onValueChange = { num = it },
-            label = { Text("Número") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        OutlinedTextField(value = num, onValueChange = { num = it }, label = { Text(Strings.registroNumero) }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = cp,
-            onValueChange = { cp = it },
-            label = { Text("Código Postal") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        OutlinedTextField(value = cp, onValueChange = { cp = it }, label = { Text(Strings.registroCP) }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = municipio,
-            onValueChange = { municipio = it },
-            label = { Text("Municipio") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        OutlinedTextField(value = municipio, onValueChange = { municipio = it }, label = { Text(Strings.registroMunicipio) }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = provincia,
-            onValueChange = { provincia = it },
-            label = { Text("Provincia") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
+        OutlinedTextField(value = provincia, onValueChange = { provincia = it }, label = { Text(Strings.registroProvincia) }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    if (
-                        username.isNotBlank() && email.isNotBlank() &&
-                        password.isNotBlank() && passwordRepeat.isNotBlank() &&
-                        calle.isNotBlank() && num.isNotBlank() &&
-                        municipio.isNotBlank() && provincia.isNotBlank() && cp.isNotBlank()
-                    ) {
-                        if (password == passwordRepeat) {
-                            isLoading.value = true
-                            val direccion = Direccion(calle, num, municipio, provincia, cp)
-
-                            viewModel.register(username, email, password, passwordRepeat, direccion) { success, message ->
-                                registerResponse.value = message
-                                isLoading.value = false
-                                if (success) {
-                                    navController.navigate(AppScreen.Login.route) {
-                                        popUpTo(AppScreen.Registro.route) { inclusive = true }
-                                    }
+        Button(
+            onClick = {
+                if (username.isNotBlank() && email.isNotBlank() &&
+                    password.isNotBlank() && passwordRepeat.isNotBlank() &&
+                    calle.isNotBlank() && num.isNotBlank() &&
+                    municipio.isNotBlank() && provincia.isNotBlank() && cp.isNotBlank()
+                ) {
+                    if (password == passwordRepeat) {
+                        isLoading.value = true
+                        val direccion = Direccion(calle, num, municipio, provincia, cp)
+                        viewModel.register(username, email, password, passwordRepeat, direccion) { success, message ->
+                            registerResponse.value = message
+                            isLoading.value = false
+                            if (success) {
+                                navController.navigate(AppScreen.Login.route) {
+                                    popUpTo(AppScreen.Registro.route) { inclusive = true }
                                 }
                             }
-                        } else {
-                            registerResponse.value = "❌ Corrige los errores antes de continuar."
                         }
                     } else {
-                        registerResponse.value = "❌ Todos los campos son obligatorios."
+                        registerResponse.value = Strings.registroErrores
                     }
-                },
-                enabled = !isLoading.value,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (isLoading.value) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
-                else Text("Registrarse")
-            }
+                } else {
+                    registerResponse.value = Strings.registroCamposObligatorios
+                }
+            },
+            enabled = !isLoading.value,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (isLoading.value) CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
+            else Text(Strings.registroBoton)
+        }
 
         if (registerResponse.value.isNotEmpty()) {
             Text(
@@ -232,8 +201,8 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
             )
         }
 
-        TextButton(onClick = { navController.navigate("login") }) {
-            Text("¿Ya tienes cuenta? Inicia sesión", color = MaterialTheme.colorScheme.primary)
+        TextButton(onClick = { navController.navigate(AppScreen.Login.route) }) {
+            Text(Strings.registroTieneCuenta, color = MaterialTheme.colorScheme.primary)
         }
     }
 }

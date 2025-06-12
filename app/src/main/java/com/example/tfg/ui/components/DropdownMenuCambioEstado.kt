@@ -11,21 +11,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.example.tfg.ui.viewModel.PedidoViewModel
+import com.example.tfg.utils.Strings
 
 @Composable
-fun DropdownMenuCambioEstado(numeroPedido: String, estadoActual: String, viewModel: PedidoViewModel) {
+fun DropdownMenuCambioEstado(
+    numeroPedido: String,
+    estadoActual: String,
+    viewModel: PedidoViewModel
+) {
     var expanded by remember { mutableStateOf(false) }
+
     val opciones = listOf("PENDIENTE", "COMPLETADO", "CANCELADO").filter { it != estadoActual }
 
     Box {
         Button(onClick = { expanded = true }) {
-            Text("Cambiar estado")
+            Text(Strings.cambiarEstado)
         }
 
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             opciones.forEach { nuevoEstado ->
                 DropdownMenuItem(
-                    text = { Text(nuevoEstado) },
+                    text = { Text(Strings.estadoLegible(nuevoEstado)) },
                     onClick = {
                         expanded = false
                         viewModel.cambiarEstadoPedido(numeroPedido, nuevoEstado)

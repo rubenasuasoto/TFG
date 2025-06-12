@@ -33,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.example.tfg.ui.components.DropdownMenuCambioEstado
 import com.example.tfg.ui.screens.Menu.EstadoPedidoLabel
 import com.example.tfg.ui.viewModel.PedidoViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,10 +51,10 @@ fun AdminPedidosScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Gestión de pedidos (admin)") },
+                title = { Text(Strings.adminPedidosTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -68,7 +69,7 @@ fun AdminPedidosScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                label = { Text("Buscar por usuario, estado o producto") },
+                label = { Text(Strings.adminPedidosBuscarLabel) },
                 modifier = Modifier.fillMaxWidth(),
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
             )
@@ -85,7 +86,7 @@ fun AdminPedidosScreen(
 
             if (pedidosFiltrados.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No se encontraron pedidos.")
+                    Text(Strings.adminPedidosNoResultados)
                 }
                 return@Column
             }
@@ -94,14 +95,14 @@ fun AdminPedidosScreen(
                 items(pedidosFiltrados) { pedido ->
                     Card(elevation = cardElevation(4.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            Text("Pedido Nº: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
-                            Text("Usuario: ${pedido.usuario}", style = MaterialTheme.typography.bodyMedium)
+                            Text("${Strings.pedidoNumero}: ${pedido.numeroPedido}", style = MaterialTheme.typography.titleMedium)
+                            Text("${Strings.usuario}: ${pedido.usuario}", style = MaterialTheme.typography.bodyMedium)
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Divider()
                             Spacer(modifier = Modifier.height(4.dp))
 
-                            Text("Productos:", style = MaterialTheme.typography.titleSmall)
+                            Text(Strings.productos, style = MaterialTheme.typography.titleSmall)
                             pedido.detalles.forEach {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -115,17 +116,21 @@ fun AdminPedidosScreen(
                             Spacer(modifier = Modifier.height(8.dp))
 
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("Estado: ", style = MaterialTheme.typography.bodyMedium)
+                                Text("${Strings.estado}: ", style = MaterialTheme.typography.bodyMedium)
                                 EstadoPedidoLabel(pedido.estado)
                             }
 
-                            Text("Total: €${"%.2f".format(pedido.precioFinal)}")
-                            Text("Fecha: ${pedido.fechaCreacion.toString().substring(0, 10)}")
+                            Text("${Strings.total}: €${"%.2f".format(pedido.precioFinal)}")
+                            Text("${Strings.fecha}: ${pedido.fechaCreacion.toString().substring(0, 10)}")
 
                             Spacer(modifier = Modifier.height(12.dp))
 
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                DropdownMenuCambioEstado(pedido.numeroPedido ?: "", pedido.estado, pedidoViewModel)
+                                DropdownMenuCambioEstado(
+                                    pedido.numeroPedido ?: "",
+                                    pedido.estado,
+                                    pedidoViewModel
+                                )
                                 OutlinedButton(
                                     onClick = {
                                         pedido.numeroPedido?.let {
@@ -133,9 +138,9 @@ fun AdminPedidosScreen(
                                         }
                                     }
                                 ) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                                    Icon(Icons.Default.Delete, contentDescription = Strings.eliminar)
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Eliminar")
+                                    Text(Strings.eliminar)
                                 }
                             }
                         }
@@ -145,4 +150,3 @@ fun AdminPedidosScreen(
         }
     }
 }
-

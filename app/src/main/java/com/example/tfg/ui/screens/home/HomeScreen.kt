@@ -39,7 +39,7 @@ import com.example.tfg.ui.components.ProductoCardCarrusel
 import com.example.tfg.ui.components.ProductoCardGrid
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.ProductoViewModel
-
+import com.example.tfg.utils.Strings
 
 @Composable
 fun HomeScreen(
@@ -50,7 +50,6 @@ fun HomeScreen(
 ) {
     val productos by productoViewModel.productos.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     var showLoginPrompt by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -82,60 +81,64 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        Column(modifier = Modifier
-            .padding(paddingValues)
-            .padding(16.dp)
-            .fillMaxSize()
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .fillMaxSize()
         ) {
-
             BuscadorProductosRemoto(productoViewModel) { productoSeleccionado ->
                 navController.navigate("detalle_producto/${productoSeleccionado.numeroProducto}")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Primero sección de Recomendados
-            Text("Recomendados", style = MaterialTheme.typography.titleLarge)
+            Text(Strings.homeRecomendados, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
+
             LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 items(recomendados) { producto ->
                     ProductoCardCarrusel(
                         producto = producto,
-                        onVerDetalle = { navController.navigate("producto/${producto.numeroProducto}") }
+                        onVerDetalle = {
+                            navController.navigate("producto/${producto.numeroProducto}")
+                        }
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Luego sección de Productos
-            Text("Productos", style = MaterialTheme.typography.titleLarge)
+            Text(Strings.homeProductos, style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(8.dp))
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(bottom = 16.dp)
             ) {
                 items(productos) { producto ->
                     ProductoCardGrid(
                         producto = producto,
-                        onVerDetalle = { navController.navigate("producto/${producto.numeroProducto}") },
+                        onVerDetalle = {
+                            navController.navigate("producto/${producto.numeroProducto}")
+                        },
                         onAgregarCarrito = {
                             if (isUserLoggedIn) onAddToCart(producto)
                             else navController.navigate("login")
-
                         }
                     )
                 }
             }
+
             if (showLoginPrompt) {
                 LaunchedEffect(Unit) {
                     val result = snackbarHostState.showSnackbar(
-                        message = "Necesitas iniciar sesión",
-                        actionLabel = "Iniciar sesión",
+                        message = Strings.homeNecesitaLogin,
+                        actionLabel = Strings.homeAccionIniciarSesion,
                         withDismissAction = true
                     )
                     if (result == SnackbarResult.ActionPerformed) {

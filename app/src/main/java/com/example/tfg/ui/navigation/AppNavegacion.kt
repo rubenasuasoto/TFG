@@ -20,15 +20,15 @@ import com.example.tfg.ui.viewModel.PedidoViewModel
 import com.example.tfg.ui.viewModel.ProductoViewModel
 import androidx.compose.runtime.getValue
 import com.example.tfg.ui.components.SnackLoginRedirect
-import com.example.tfg.ui.screens.AdminPersonalizationScreen
-import com.example.tfg.ui.screens.CarritoScreen
+import com.example.tfg.ui.screens.admin.AdminPersonalizationScreen
+import com.example.tfg.ui.screens.compra.CarritoScreen
 
 import com.example.tfg.ui.screens.Menu.CambiarPasswordScreen
 import com.example.tfg.ui.screens.Menu.MenuScreen
 import com.example.tfg.ui.screens.Menu.PedidosScreen
 import com.example.tfg.ui.screens.Menu.PerfilScreen
-import com.example.tfg.ui.screens.ProductoScreen
-import com.example.tfg.ui.screens.SettingsScreen
+import com.example.tfg.ui.screens.compra.ProductoScreen
+import com.example.tfg.ui.screens.Menu.SettingsScreen
 import com.example.tfg.ui.screens.admin.AdminDashboardScreen
 import com.example.tfg.ui.screens.admin.AdminPedidosScreen
 import com.example.tfg.ui.screens.admin.AdminProductosScreen

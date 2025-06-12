@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import com.example.tfg.ui.components.DashboardCard
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,18 +38,13 @@ fun AdminDashboardScreen(
     val pedidos by pedidoViewModel.pedidosAdmin.collectAsState()
     val usuarios by authViewModel.listaUsuarios.collectAsState()
 
-    // Cálculos
     val totalProductos = productos.size
     val totalPedidos = pedidos.size
     val pedidosPendientes = pedidos.count { it.estado == "PENDIENTE" }
     val pedidosCompletados = pedidos.count { it.estado == "COMPLETADO" }
-    val ventasTotales = pedidos
-        .filter { it.estado == "COMPLETADO" }
-        .sumOf { it.precioFinal }
-
+    val ventasTotales = pedidos.filter { it.estado == "COMPLETADO" }.sumOf { it.precioFinal }
     val totalUsuarios = usuarios.size
 
-    // Carga datos al entrar
     LaunchedEffect(Unit) {
         productoViewModel.fetchAllProductos()
         pedidoViewModel.fetchAllPedidosAdmin()
@@ -58,10 +54,10 @@ fun AdminDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Dashboard Admin") },
+                title = { Text(Strings.adminDashboardTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -74,12 +70,15 @@ fun AdminDashboardScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            DashboardCard(title = "Productos registrados", value = totalProductos.toString())
-            DashboardCard(title = "Usuarios registrados", value = totalUsuarios.toString())
-            DashboardCard(title = "Pedidos totales", value = totalPedidos.toString())
-            DashboardCard(title = "Pendientes", value = pedidosPendientes.toString())
-            DashboardCard(title = "Completados", value = pedidosCompletados.toString())
-            DashboardCard(title = "Ventas totales (€)", value = "€${"%.2f".format(ventasTotales)}")
+            DashboardCard(title = Strings.adminDashboardProductos, value = totalProductos.toString())
+            DashboardCard(title = Strings.adminDashboardUsuarios, value = totalUsuarios.toString())
+            DashboardCard(title = Strings.adminDashboardPedidosTotales, value = totalPedidos.toString())
+            DashboardCard(title = Strings.adminDashboardPedidosPendientes, value = pedidosPendientes.toString())
+            DashboardCard(title = Strings.adminDashboardPedidosCompletados, value = pedidosCompletados.toString())
+            DashboardCard(
+                title = Strings.adminDashboardVentasTotales,
+                value = "€${"%.2f".format(ventasTotales)}"
+            )
         }
     }
 }

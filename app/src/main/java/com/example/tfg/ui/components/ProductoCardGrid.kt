@@ -1,6 +1,7 @@
 package com.example.tfg.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,38 +21,50 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.tfg.data.models.Producto
-
 @Composable
 fun ProductoCardGrid(
     producto: Producto,
     onVerDetalle: () -> Unit,
-    onAgregarCarrito: () -> Unit
+    onAgregarCarrito: () -> Unit // aún lo dejamos aunque no lo llamamos
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(220.dp)
             .clickable { onVerDetalle() },
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(6.dp)
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier.padding(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             producto.imagenUrl?.let {
                 AsyncImage(
                     model = it,
-                    contentDescription = null,
+                    contentDescription = producto.articulo,
                     modifier = Modifier
-                        .height(80.dp)
+                        .height(100.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(producto.articulo ?: "Sin nombre", fontWeight = FontWeight.Bold, maxLines = 1)
-            Text("€${producto.precio}", style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = producto.articulo ?: "Sin nombre",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
+            )
+
+            Text(
+                text = "€${producto.precio}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

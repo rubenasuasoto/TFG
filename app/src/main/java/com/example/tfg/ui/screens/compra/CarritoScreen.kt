@@ -1,4 +1,4 @@
-package com.example.tfg.ui.screens
+package com.example.tfg.ui.screens.compra
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.tfg.ui.components.BottomBarNavigation
 import com.example.tfg.ui.navigation.AppScreen
+import com.example.tfg.utils.Strings
 import kotlinx.coroutines.launch
 @Composable
 fun CarritoScreen(
@@ -81,12 +82,12 @@ fun CarritoScreen(
                     .padding(16.dp)
                     .fillMaxSize()
             ) {
-                Text("Carrito", style = MaterialTheme.typography.headlineSmall)
+                Text(Strings.carritoTitulo, style = MaterialTheme.typography.headlineSmall)
                 Spacer(modifier = Modifier.height(12.dp))
 
                 if (carrito.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("🛒 Tu carrito está vacío")
+                        Text(Strings.carritoVacio)
                     }
                     return@Column
                 }
@@ -131,7 +132,7 @@ fun CarritoScreen(
                                 IconButton(onClick = {
                                     pedidoViewModel.eliminarProducto(producto)
                                 }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar del carrito")
+                                    Icon(Icons.Default.Delete, contentDescription = Strings.carritoEliminar)
                                 }
                             }
                         }
@@ -143,7 +144,7 @@ fun CarritoScreen(
                 Card(elevation = CardDefaults.cardElevation(4.dp)) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Total: €${"%.2f".format(total)}",
+                            "${Strings.carritoTotal}: €${"%.2f".format(total)}",
                             style = MaterialTheme.typography.titleLarge
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -171,7 +172,7 @@ fun CarritoScreen(
                                         strokeWidth = 2.dp
                                     )
                                 } else {
-                                    Text("Finalizar compra")
+                                    Text(Strings.carritoFinalizar)
                                 }
                             }
 
@@ -180,7 +181,7 @@ fun CarritoScreen(
                                 modifier = Modifier.weight(1f),
                                 enabled = !loading
                             ) {
-                                Text("Seguir comprando")
+                                Text(Strings.carritoSeguir)
                             }
                         }
                     }
@@ -198,7 +199,7 @@ fun CarritoScreen(
                         CircularProgressIndicator(color = Color.White)
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = "Procesando compra...",
+                            text = Strings.carritoProcesando,
                             color = Color.White,
                             style = MaterialTheme.typography.bodyMedium
                         )

@@ -45,6 +45,7 @@ import com.example.tfg.data.models.UsuarioUpdateDTO
 import com.example.tfg.ui.components.BottomBarNavigation
 import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
+import com.example.tfg.utils.Strings
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +72,6 @@ fun PerfilScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-
     LaunchedEffect(Unit) {
         authViewModel.cargarPerfil()
     }
@@ -80,10 +80,10 @@ fun PerfilScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Mi perfil") },
+                title = { Text(Strings.perfilTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -105,16 +105,15 @@ fun PerfilScreen(
         ) {
             usuario?.let {
                 if (!isEditing.value) {
-                    // Modo visual
-                    Text("Nombre de usuario: ${it.username}", style = MaterialTheme.typography.titleMedium)
+                    Text("${Strings.perfilUsuario}: ${it.username}", style = MaterialTheme.typography.titleMedium)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Email: ${it.email}", modifier = Modifier.weight(1f))
+                        Text("${Strings.perfilEmail}: ${it.email}", modifier = Modifier.weight(1f))
                         IconButton(onClick = {
                             email = it.email
                             isEditing.value = true
                         }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Editar email")
+                            Icon(Icons.Default.Edit, contentDescription = Strings.editar)
                         }
                     }
 
@@ -122,10 +121,10 @@ fun PerfilScreen(
                     Divider()
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Dirección:", style = MaterialTheme.typography.titleMedium)
+                    Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("Calle: ${it.direccion.calle}", modifier = Modifier.weight(1f))
+                        Text("${Strings.direccionCalle}: ${it.direccion.calle}", modifier = Modifier.weight(1f))
                         IconButton(onClick = {
                             calle = it.direccion.calle
                             municipio = it.direccion.municipio
@@ -134,44 +133,43 @@ fun PerfilScreen(
                             email = it.email
                             isEditing.value = true
                         }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Editar dirección")
+                            Icon(Icons.Default.Edit, contentDescription = Strings.editar)
                         }
                     }
 
-                    Text("Municipio: ${it.direccion.municipio}")
-                    Text("Provincia: ${it.direccion.provincia}")
-                    Text("Código postal: ${it.direccion.cp}")
+                    Text("${Strings.direccionMunicipio}: ${it.direccion.municipio}")
+                    Text("${Strings.direccionProvincia}: ${it.direccion.provincia}")
+                    Text("${Strings.direccionCP}: ${it.direccion.cp}")
                 } else {
-                    // Modo edición
                     OutlinedTextField(
                         value = email,
                         onValueChange = {
                             email = it
                             emailError = !EMAIL_REGEX.matches(it)
                         },
-                        label = { Text("Email") },
+                        label = { Text(Strings.perfilEmail) },
                         isError = emailError,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (emailError) Text("Email inválido", color = Color.Red)
+                    if (emailError) Text(Strings.errorEmail, color = Color.Red)
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Divider()
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Dirección:", style = MaterialTheme.typography.titleMedium)
+                    Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
 
                     OutlinedTextField(
                         value = calle,
                         onValueChange = { calle = it },
-                        label = { Text("Calle") },
+                        label = { Text(Strings.direccionCalle) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
                         value = municipio,
                         onValueChange = { municipio = it },
-                        label = { Text("Municipio") },
+                        label = { Text(Strings.direccionMunicipio) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -181,16 +179,16 @@ fun PerfilScreen(
                             provincia = it
                             provinciaError = it.isBlank()
                         },
-                        label = { Text("Provincia") },
+                        label = { Text(Strings.direccionProvincia) },
                         isError = provinciaError,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    if (provinciaError) Text("La provincia no puede estar vacía", color = Color.Red)
+                    if (provinciaError) Text(Strings.errorProvinciaVacia, color = Color.Red)
 
                     OutlinedTextField(
                         value = cp,
                         onValueChange = { cp = it },
-                        label = { Text("Código Postal") },
+                        label = { Text(Strings.direccionCP) },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -206,7 +204,7 @@ fun PerfilScreen(
 
                                 if (!camposValidos) {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar("❌ Corrige los errores antes de guardar")
+                                        snackbarHostState.showSnackbar(Strings.errorCamposInvalidos)
                                     }
                                     return@Button
                                 }
@@ -221,10 +219,7 @@ fun PerfilScreen(
 
                                 authViewModel.actualizarPerfil(dto) { success, msg ->
                                     scope.launch {
-                                        snackbarHostState.showSnackbar(
-                                            message = msg,
-                                            duration = SnackbarDuration.Short
-                                        )
+                                        snackbarHostState.showSnackbar(msg)
                                     }
                                     if (success) {
                                         isEditing.value = false
@@ -234,14 +229,14 @@ fun PerfilScreen(
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Guardar")
+                            Text(Strings.guardar)
                         }
 
                         OutlinedButton(
                             onClick = { isEditing.value = false },
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text("Cancelar")
+                            Text(Strings.cancelar)
                         }
                     }
                 }
@@ -253,3 +248,4 @@ fun PerfilScreen(
         }
     }
 }
+

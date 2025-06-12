@@ -1,8 +1,10 @@
 package com.example.tfg.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -20,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.tfg.data.models.Producto
-
 @Composable
 fun ProductoCardCarrusel(
     producto: Producto,
@@ -31,14 +33,20 @@ fun ProductoCardCarrusel(
             .width(160.dp)
             .height(220.dp)
             .clickable { onVerDetalle() },
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             producto.imagenUrl?.let {
                 AsyncImage(
                     model = it,
-                    contentDescription = null,
+                    contentDescription = producto.articulo,
                     modifier = Modifier
                         .height(100.dp)
                         .fillMaxWidth()
@@ -46,9 +54,21 @@ fun ProductoCardCarrusel(
                     contentScale = ContentScale.Crop
                 )
             }
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(producto.articulo ?: "Sin nombre", fontWeight = FontWeight.SemiBold, maxLines = 1)
-            Text("€${producto.precio}", style = MaterialTheme.typography.bodyMedium)
+
+            Text(
+                text = producto.articulo ?: "Sin nombre",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
+            )
+
+            Text(
+                text = "€${producto.precio}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

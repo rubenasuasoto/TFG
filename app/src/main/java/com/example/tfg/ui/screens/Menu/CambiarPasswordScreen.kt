@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.tfg.ui.viewModel.AuthViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,10 +47,10 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Cambiar contraseña") },
+                title = { Text(Strings.cambiarPasswordTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -65,7 +66,7 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
             OutlinedTextField(
                 value = actual,
                 onValueChange = { actual = it },
-                label = { Text("Contraseña actual") },
+                label = { Text(Strings.passwordActual) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -76,14 +77,14 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
                     nueva = it
                     nuevaError = false
                 },
-                label = { Text("Nueva contraseña") },
+                label = { Text(Strings.nuevaPassword) },
                 isError = nuevaError,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
             if (nuevaError) {
                 Text(
-                    "Debe tener al menos 8 caracteres, incluir un número y un carácter especial",
+                    Strings.passwordInvalida,
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -94,13 +95,13 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
                     repetir = it
                     repetirError = false
                 },
-                label = { Text("Repetir nueva contraseña") },
+                label = { Text(Strings.repetirPassword) },
                 isError = repetirError,
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
             )
             if (repetirError) {
-                Text("Las contraseñas no coinciden", color = MaterialTheme.colorScheme.error)
+                Text(Strings.passwordNoCoincide, color = MaterialTheme.colorScheme.error)
             }
 
             Button(
@@ -127,7 +128,7 @@ fun CambiarPasswordScreen(navController: NavHostController, viewModel: AuthViewM
                 if (loading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Text("Cambiar contraseña")
+                    Text(Strings.cambiarPasswordBoton)
                 }
             }
 

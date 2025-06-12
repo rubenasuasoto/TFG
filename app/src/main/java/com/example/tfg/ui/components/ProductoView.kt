@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.tfg.data.models.Producto
+import com.example.tfg.utils.Strings
 
 @Composable
 fun ProductoView(
@@ -47,7 +48,7 @@ fun ProductoView(
         }
 
         Text(
-            text = producto.articulo ?: "Sin nombre",
+            text = producto.articulo ?: Strings.sinNombre,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -62,13 +63,19 @@ fun ProductoView(
 
         Divider()
 
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text("Precio:", style = MaterialTheme.typography.titleMedium)
-            Text("€${producto.precio}", style = MaterialTheme.typography.titleMedium)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(Strings.precioLabel, style = MaterialTheme.typography.titleMedium)
+            Text("€${"%.2f".format(producto.precio)}", style = MaterialTheme.typography.titleMedium)
         }
 
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text("Stock disponible:", style = MaterialTheme.typography.bodyMedium)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(Strings.stockDisponibleLabel, style = MaterialTheme.typography.bodyMedium)
             Text("${producto.stock}", style = MaterialTheme.typography.bodyMedium)
         }
 
@@ -81,7 +88,12 @@ fun ProductoView(
             modifier = Modifier.fillMaxWidth(),
             enabled = producto.stock > 0
         ) {
-            Text(if (producto.stock > 0) "Agregar al carrito" else "Sin stock")
+            Text(
+                text = if (producto.stock > 0)
+                    Strings.agregarAlCarrito
+                else
+                    Strings.sinStock
+            )
         }
     }
 }

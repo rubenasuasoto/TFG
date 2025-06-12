@@ -10,21 +10,33 @@ import kotlinx.coroutines.launch
 
 class GlobalStyleViewModel(application: Application) : AndroidViewModel(application) {
     private val context = application.applicationContext
-    private val _primaryColorHex = MutableStateFlow("#6750A4")
-    val primaryColorHex: StateFlow<String> = _primaryColorHex
+
+    private val _lightColor = MutableStateFlow("#6750A4")
+    val lightColor: StateFlow<String> = _lightColor
+
+    private val _darkColor = MutableStateFlow("#2196F3")
+    val darkColor: StateFlow<String> = _darkColor
 
     init {
         viewModelScope.launch {
-            GlobalStyleDataStore.observePrimaryColor(context).collect {
-                _primaryColorHex.value = it
-            }
+            GlobalStyleDataStore.observeLightPrimary(context).collect { _lightColor.value = it }
+        }
+        viewModelScope.launch {
+            GlobalStyleDataStore.observeDarkPrimary(context).collect { _darkColor.value = it }
         }
     }
 
-    fun setPrimaryColor(hex: String) {
+    fun setLightPrimaryColor(hex: String) {
         viewModelScope.launch {
-            GlobalStyleDataStore.savePrimaryColor(context, hex)
-            _primaryColorHex.value = hex
+            GlobalStyleDataStore.savePrimaryColor(hex, _darkColor.value, context)
+            _lightColor.value = hex
+        }
+    }
+
+    fun setDarkPrimaryColor(hex: String) {
+        viewModelScope.launch {
+            GlobalStyleDataStore.savePrimaryColor(_lightColor.value, hex, context)
+            _darkColor.value = hex
         }
     }
 }

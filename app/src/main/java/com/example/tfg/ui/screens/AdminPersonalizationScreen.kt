@@ -35,7 +35,9 @@ import androidx.navigation.NavHostController
 import com.example.tfg.ui.viewModel.GlobalStyleViewModel
 import androidx.core.graphics.toColorInt
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import com.example.tfg.ui.components.FilaColores
 import com.example.tfg.ui.viewModel.AppSettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,20 +47,21 @@ fun AdminPersonalizationScreen(
     globalStyleViewModel: GlobalStyleViewModel,
     settingsViewModel: AppSettingsViewModel
 ) {
-    val currentColor by globalStyleViewModel.primaryColorHex.collectAsState()
     val isDark by settingsViewModel.isDarkTheme.collectAsState()
+    val lightHex by globalStyleViewModel.lightColor.collectAsState()
+    val darkHex by globalStyleViewModel.darkColor.collectAsState()
 
-    // Paletas según modo
-    val coloresDisponibles = if (isDark) {
-        listOf("#2196F3", "#64DD17", "#FFEB3B", "#F50057", "#00BCD4")
-    } else {
-        listOf("#1976D2", "#388E3C", "#FB8C00", "#7B1FA2", "#546E7A")
-    }
+    val coloresClaro = listOf("#4F8EF7", "#43A047", "#FB6F51", "#9575CD", "#90A4AE")
+
+
+    val coloresOscuro = listOf("#82B1FF", "#B2FF59", "#F48FB1", "#FFF176", "#80DEEA")
+
+
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Personalización de App") },
+                title = { Text("Personalización de la App") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -74,51 +77,52 @@ fun AdminPersonalizationScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text("Color principal actual:", style = MaterialTheme.typography.titleMedium)
+            Text("Colores actuales:", style = MaterialTheme.typography.titleMedium)
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color(currentColor.toColorInt()))
-                    .border(1.dp, MaterialTheme.colorScheme.outline)
-            )
-
-            Divider()
-
-            Text("Selecciona un nuevo color:", style = MaterialTheme.typography.titleMedium)
-
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                coloresDisponibles.chunked(3).forEach { fila ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        fila.forEach { hex ->
-                            val color = Color(hex.toColorInt())
-                            val isSelected = hex.equals(currentColor, ignoreCase = true)
-
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(48.dp)
-                                    .border(
-                                        width = if (isSelected) 3.dp else 1.dp,
-                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                                        shape = RoundedCornerShape(8.dp)
-                                    )
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(color)
-                                    .clickable { globalStyleViewModel.setPrimaryColor(hex) }
-                            )
-                        }
-                    }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp)
+                        .background(Color(lightHex.toColorInt()))
+                        .border(1.dp, MaterialTheme.colorScheme.outline),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Claro", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp)
+                        .background(Color(darkHex.toColorInt()))
+                        .border(1.dp, MaterialTheme.colorScheme.outline),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Oscuro", style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 }
             }
 
+            Divider()
+
+            Text("Seleccionar color para Modo CLARO:", style = MaterialTheme.typography.titleSmall)
+            FilaColores(
+                actual = lightHex,
+                opciones = coloresClaro,
+                onSeleccionar = { globalStyleViewModel.setLightPrimaryColor(it) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("Seleccionar color para Modo OSCURO:", style = MaterialTheme.typography.titleSmall)
+            FilaColores(
+                actual = darkHex,
+                opciones = coloresOscuro,
+                onSeleccionar = { globalStyleViewModel.setDarkPrimaryColor(it) }
+            )
+
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                "Este color se aplicará a toda la aplicación para todos los usuarios.",
+                "Los colores personalizados afectan globalmente la app para todos los usuarios.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline
             )

@@ -25,14 +25,13 @@ fun MyApp(
 ) {
     val isDark by settingsViewModel.isDarkTheme.collectAsState()
     val fontScale by settingsViewModel.fontScale.collectAsState()
-    val colorHex by styleViewModel.primaryColorHex.collectAsState()
+    val lightHex by styleViewModel.lightColor.collectAsState()
+    val darkHex by styleViewModel.darkColor.collectAsState()
 
-    val customColor = remember(colorHex) {
-        Color(colorHex.toColorInt())
-    }
-
-    val colorScheme = if (isDark) darkColorScheme(primary = customColor)
-    else lightColorScheme(primary = customColor)
+    val colorScheme = if (isDark)
+        darkColorScheme(primary = Color(darkHex.toColorInt()))
+    else
+        lightColorScheme(primary = Color(lightHex.toColorInt()))
 
     CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, fontScale)) {
         MaterialTheme(colorScheme = colorScheme) {

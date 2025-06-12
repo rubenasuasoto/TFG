@@ -12,12 +12,21 @@ import kotlinx.coroutines.flow.map
 object GlobalStyleDataStore {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("global_style")
 
-    private val PRIMARY_COLOR_KEY = stringPreferencesKey("primary_color")
 
-    suspend fun savePrimaryColor(context: Context, colorHex: String) {
-        context.dataStore.edit { it[PRIMARY_COLOR_KEY] = colorHex }
+    private val LIGHT_PRIMARY_KEY = stringPreferencesKey("light_primary")
+    private val DARK_PRIMARY_KEY = stringPreferencesKey("dark_primary")
+
+
+    suspend fun savePrimaryColor(light: String, dark: String, context: Context) {
+        context.dataStore.edit {
+            it[LIGHT_PRIMARY_KEY] = light
+            it[DARK_PRIMARY_KEY] = dark
+        }
     }
 
-    fun observePrimaryColor(context: Context): Flow<String> =
-        context.dataStore.data.map { it[PRIMARY_COLOR_KEY] ?: "#6750A4" } // default Material 3
+    fun observeLightPrimary(context: Context): Flow<String> =
+        context.dataStore.data.map { it[LIGHT_PRIMARY_KEY] ?: "#6750A4" }
+
+    fun observeDarkPrimary(context: Context): Flow<String> =
+        context.dataStore.data.map { it[DARK_PRIMARY_KEY] ?: "#2196F3" }
 }

@@ -14,14 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.tfg.ui.navigation.AppNavigation
 import com.example.tfg.ui.theme.TFGTheme
+import com.example.tfg.ui.viewModel.AppSettingsViewModel
+
 
 class MainActivity : ComponentActivity() {
+    private lateinit var settingsViewModel: AppSettingsViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        settingsViewModel = AppSettingsViewModel(application)
+
         setContent {
-            MaterialTheme {
-                AppNavigation(context = this)
-            }
+            MyApp(settingsViewModel)
         }
     }
 }
+

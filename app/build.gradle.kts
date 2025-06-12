@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.ui.tooling.preview)
+    implementation("androidx.datastore:datastore-preferences:1.1.7")
     debugImplementation(libs.ui.tooling)
 
 

@@ -52,6 +52,10 @@ fun MenuScreen(navController: NavHostController, authViewModel: AuthViewModel) {
             Text("Cambiar contraseña", modifier = Modifier.clickable {
                  navController.navigate(AppScreen.Cambiarcontrasena.route)
             })
+            Text("Ajustes", modifier = Modifier.clickable {
+                navController.navigate(AppScreen.Settings.route)
+            })
+
             if (authViewModel.isAdmin.collectAsState().value) {
                 Divider()
                 Text("ADMIN", style = MaterialTheme.typography.titleSmall)

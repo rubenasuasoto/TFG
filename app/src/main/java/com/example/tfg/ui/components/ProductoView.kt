@@ -1,5 +1,6 @@
 package com.example.tfg.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.tfg.data.models.Producto
 import com.example.tfg.utils.Strings
-
 @Composable
 fun ProductoView(
     producto: Producto,
@@ -33,17 +33,18 @@ fun ProductoView(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         producto.imagenUrl?.let {
             AsyncImage(
                 model = it,
                 contentDescription = producto.articulo,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit, // 🖼️ Mejora: evita recorte de imagen
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp)
+                    .heightIn(min = 240.dp, max = 300.dp)
                     .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
         }
 
@@ -63,23 +64,17 @@ fun ProductoView(
 
         Divider()
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(Strings.precioLabel, style = MaterialTheme.typography.titleMedium)
             Text("€${"%.2f".format(producto.precio)}", style = MaterialTheme.typography.titleMedium)
         }
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(Strings.stockDisponibleLabel, style = MaterialTheme.typography.bodyMedium)
             Text("${producto.stock}", style = MaterialTheme.typography.bodyMedium)
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = {
@@ -88,12 +83,30 @@ fun ProductoView(
             modifier = Modifier.fillMaxWidth(),
             enabled = producto.stock > 0
         ) {
-            Text(
-                text = if (producto.stock > 0)
-                    Strings.agregarAlCarrito
-                else
-                    Strings.sinStock
-            )
+            Text(if (producto.stock > 0) Strings.agregarAlCarrito else Strings.sinStock)
         }
+
+        Divider(thickness = 1.dp)
+
+        // 📋 Simulación de especificaciones
+        Text("Especificaciones del producto", style = MaterialTheme.typography.titleMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("• Categoría: Electrónica")
+            Text("• Dimensiones: ")
+            Text("• Peso: ")
+            Text("• Garantía: 2 años")
+        }
+
+        Divider(thickness = 1.dp)
+
+        // 💬 Simulación de comentarios
+        Text("Comentarios", style = MaterialTheme.typography.titleMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("⭐️⭐️⭐️⭐️⭐️ \"Excelente calidad. Lo recomiendo!\" – Juan P.")
+            Text("⭐️⭐️⭐️⭐️ \"Funciona bien, cumple su función.\" – Laura G.")
+            Text("⭐️⭐️⭐️ \"Esperaba más, pero está bien por el precio.\" – Carlos M.")
+        }
+        Spacer(modifier = Modifier.height(80.dp)) // evita solapamiento con el BottomBar
+
     }
 }

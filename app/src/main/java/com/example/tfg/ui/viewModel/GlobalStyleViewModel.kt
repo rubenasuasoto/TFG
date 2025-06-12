@@ -24,6 +24,7 @@ class GlobalStyleViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             GlobalStyleDataStore.observeDarkPrimary(context).collect { _darkColor.value = it }
         }
+
     }
 
     fun setLightPrimaryColor(hex: String) {

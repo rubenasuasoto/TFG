@@ -38,7 +38,7 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
                 val resultado = RetrofitClient.apiService.getUserPedidos()
                 _pedidos.value = resultado
             } catch (e: Exception) {
-                Log.e("PedidoVM", "❌ Error al obtener pedidos del usuario", e)
+                Log.e("PedidoVM", " Error al obtener pedidos del usuario", e)
                 _pedidos.value = emptyList()
             }
         }
@@ -78,7 +78,7 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val carritoActual = carrito.value
                 if (carritoActual.isEmpty()) {
-                    onResult(false, "❌ El carrito está vacío")
+                    onResult(false, " El carrito está vacío")
                     return@launch
                 }
 
@@ -94,8 +94,8 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
 
                 onResult(true, "✅ Pedido realizado correctamente")
             } catch (e: Exception) {
-                Log.e("PedidoVM", "❌ Error al crear pedido", e)
-                onResult(false, "❌ Error al finalizar la compra")
+                Log.e("PedidoVM", " Error al crear pedido", e)
+                onResult(false, " Error al finalizar la compra")
             }
         }
     }
@@ -107,7 +107,7 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
                 val resultado = RetrofitClient.apiService.getAllPedidos()
                 _pedidosAdmin.value = resultado
             } catch (e: Exception) {
-                Log.e("PedidoVM", "❌ Error al obtener pedidos admin", e)
+                Log.e("PedidoVM", " Error al obtener pedidos admin", e)
             }
         }
     }
@@ -119,10 +119,10 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
                 if (response.isSuccessful) {
                     fetchAllPedidosAdmin()
                 } else {
-                    Log.e("PedidoVM", "❌ No se pudo cambiar estado (${response.code()})")
+                    Log.e("Pedido", " No se pudo cambiar estado (${response.code()})")
                 }
             } catch (e: Exception) {
-                Log.e("PedidoVM", "❌ Error al cambiar estado", e)
+                Log.e("PedidoVM", " Error al cambiar estado", e)
             }
         }
     }
@@ -134,10 +134,10 @@ class PedidoViewModel(application: Application) : AndroidViewModel(application) 
                 if (response.isSuccessful) {
                     fetchAllPedidosAdmin()
                 } else {
-                    Log.e("PedidoVM", "❌ No se pudo eliminar pedido (${response.code()})")
+                    Log.e("PedidoVM", " No se pudo eliminar pedido (${response.code()})")
                 }
             } catch (e: Exception) {
-                Log.e("PedidoVM", "❌ Error al eliminar pedido", e)
+                Log.e("PedidoVM", " Error al eliminar pedido", e)
             }
         }
     }

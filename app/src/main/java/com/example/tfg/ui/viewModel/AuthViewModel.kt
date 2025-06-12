@@ -52,7 +52,7 @@ class AuthViewModel(
                 val response = RetrofitClient.apiService.login(LoginRequest(username, password))
                 if (response.token != null) {
                     RetrofitClient.updateToken(response.token, context)
-                    Log.d("AuthViewModel", "✅ Token guardado: ${TokenManager.getToken(context)}")
+                    Log.d("AuthViewModel", "Token guardado: ${TokenManager.getToken(context)}")
                     val isAdmin = checkAdminStatus()
                     _loginState.value = AuthState.Success(response.token, isAdmin)
                 } else {
@@ -106,7 +106,7 @@ class AuthViewModel(
                 val usuario = RetrofitClient.apiService.getSelf()
                 _usuarioActual.value = usuario
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "❌ Error al cargar perfil", e)
+                Log.e("AuthViewModel", " Error al cargar perfil", e)
                 _usuarioActual.value = null
             }
         }
@@ -117,12 +117,12 @@ class AuthViewModel(
             try {
                 val response = RetrofitClient.apiService.updateSelf(dto)
                 if (response.isSuccessful) {
-                    onResult(true, "✅ Perfil actualizado")
+                    onResult(true, " Perfil actualizado")
                 } else {
-                    onResult(false, "❌ No se pudo actualizar el perfil")
+                    onResult(false, " No se pudo actualizar el perfil")
                 }
             } catch (e: Exception) {
-                onResult(false, "❌ Error de red o servidor")
+                onResult(false, " Error de red o servidor")
             }
         }
     }
@@ -144,12 +144,12 @@ class AuthViewModel(
 
                 val response = RetrofitClient.apiService.updateSelf(dto)
                 if (response.isSuccessful) {
-                    onResult(true, "✅ Contraseña actualizada correctamente")
+                    onResult(true, " Contraseña actualizada correctamente")
                 } else {
-                    onResult(false, "❌ No se pudo actualizar la contraseña")
+                    onResult(false, " No se pudo actualizar la contraseña")
                 }
             } catch (e: Exception) {
-                onResult(false, "❌ Error de red o servidor")
+                onResult(false, " Error de red o servidor")
             }
         }
     }
@@ -157,7 +157,7 @@ class AuthViewModel(
     // ░░░ Token persistente ░░░
     fun checkExistingToken() {
         val savedToken = TokenManager.getToken(context)
-        Log.d("AuthViewModel", "✅ checkExistingToken() → $savedToken")
+        Log.d("AuthViewModel", " checkExistingToken() → $savedToken")
 
         if (!savedToken.isNullOrEmpty()) {
             RetrofitClient.updateToken(savedToken, context)
@@ -195,7 +195,7 @@ class AuthViewModel(
                 val usuarios = RetrofitClient.apiService.getAll()
                 _listaUsuarios.value = usuarios
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "❌ Error al obtener usuarios", e)
+                Log.e("AuthViewModel", " Error al obtener usuarios", e)
             }
         }
     }

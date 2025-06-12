@@ -28,7 +28,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 val productos = RetrofitClient.apiService.getAllProductos()
                 _productos.value = productos
             } catch (e: Exception) {
-                Log.e("ProductoViewModel", "❌ Error al obtener productos", e)
+                Log.e("ProductoViewModel", " Error al obtener productos", e)
                 _productos.value = emptyList()
             }
         }
@@ -41,7 +41,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 _productoSeleccionado.value = producto
                 _productoError.value = false
             } catch (e: Exception) {
-                Log.e("ProductoVM", "❌ Error al obtener producto", e)
+                Log.e("ProductoVM", " Error al obtener producto", e)
                 _productoSeleccionado.value = null
                 _productoError.value = true
             }
@@ -55,7 +55,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 val resultado = RetrofitClient.apiService.buscarProductosPorNombre(query)
                 onResult(resultado)
             } catch (e: Exception) {
-                Log.e("ProductoVM", "❌ Error en búsqueda parcial", e)
+                Log.e("ProductoVM", " Error en búsqueda parcial", e)
                 onResult(emptyList())
             }
         }
@@ -69,7 +69,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 fetchAllProductos()
                 onResult(true)
             } catch (e: Exception) {
-                Log.e("ProductoViewModel", "❌ Error al crear producto", e)
+                Log.e("ProductoViewModel", " Error al crear producto", e)
                 onResult(false)
             }
         }
@@ -82,7 +82,7 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 fetchAllProductos()
                 onResult(true)
             } catch (e: Exception) {
-                Log.e("ProductoViewModel", "❌ Error al actualizar producto", e)
+                Log.e("ProductoViewModel", " Error al actualizar producto", e)
                 onResult(false)
             }
         }
@@ -96,11 +96,11 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                     fetchAllProductos()
                     onResult(true)
                 } else {
-                    Log.e("ProductoViewModel", "❌ Error al eliminar producto")
+                    Log.e("ProductoViewModel", " Error al eliminar producto")
                     onResult(false)
                 }
             } catch (e: Exception) {
-                Log.e("ProductoViewModel", "❌ Excepción al eliminar producto", e)
+                Log.e("ProductoViewModel", " Excepción al eliminar producto", e)
                 onResult(false)
             }
         }

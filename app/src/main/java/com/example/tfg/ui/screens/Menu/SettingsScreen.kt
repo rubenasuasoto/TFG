@@ -43,14 +43,15 @@ fun SettingsScreen(
 ) {
     val isDark by settingsViewModel.isDarkTheme.collectAsState()
     val scale by settingsViewModel.fontScale.collectAsState()
+    val idiomaActual by settingsViewModel.idioma.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Ajustes") },
+                title = { Text(Strings.ajustesTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -63,17 +64,19 @@ fun SettingsScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // 🔹 Modo oscuro
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Modo oscuro", modifier = Modifier.weight(1f))
+                Text(Strings.modoOscuro, modifier = Modifier.weight(1f))
                 Switch(checked = isDark, onCheckedChange = { settingsViewModel.toggleDarkTheme() })
             }
 
-            Text("Tamaño de letra")
+            // 🔹 Tamaño de letra
+            Text(Strings.tamanoLetra)
 
             val opciones = listOf(
-                "Pequeño" to 0.85f,
-                "Medio" to 1.0f,
-                "Grande" to 1.25f
+                Strings.pequeno to 0.85f,
+                Strings.medio to 1.0f,
+                Strings.grande to 1.25f
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -82,9 +85,7 @@ fun SettingsScreen(
                     OutlinedButton(
                         onClick = { settingsViewModel.setFontScale(value) },
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (seleccionado) MaterialTheme.colorScheme.primary.copy(
-                                alpha = 0.15f
-                            )
+                            containerColor = if (seleccionado) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
                             else Color.Transparent
                         )
                     ) {
@@ -92,11 +93,13 @@ fun SettingsScreen(
                     }
                 }
             }
+
+            // 🔹 Idioma
             Text(Strings.idiomaLabel, style = MaterialTheme.typography.titleMedium)
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = settingsViewModel.idioma.collectAsState().value == Idioma.ESP,
+                    selected = idiomaActual == Idioma.ESP,
                     onClick = { settingsViewModel.setIdioma(Idioma.ESP) }
                 )
                 Text("Español")
@@ -104,12 +107,11 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 RadioButton(
-                    selected = settingsViewModel.idioma.collectAsState().value == Idioma.ENG,
+                    selected = idiomaActual == Idioma.ENG,
                     onClick = { settingsViewModel.setIdioma(Idioma.ENG) }
                 )
                 Text("English")
             }
-
         }
     }
 }

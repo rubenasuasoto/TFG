@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import com.example.tfg.ui.components.FilaColores
 import com.example.tfg.ui.viewModel.AppSettingsViewModel
+import com.example.tfg.utils.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,19 +47,15 @@ fun AdminPersonalizationScreen(
     val darkHex by globalStyleViewModel.darkColor.collectAsState()
 
     val coloresClaro = listOf("#4F8EF7", "#43A047", "#FB6F51", "#9575CD", "#90A4AE")
-
-
     val coloresOscuro = listOf("#82B1FF", "#B2FF59", "#F48FB1", "#FFF176", "#80DEEA")
-
-
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Personalización de la App") },
+                title = { Text(Strings.personalizacionTitulo) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.Default.ArrowBack, contentDescription = Strings.volver)
                     }
                 }
             )
@@ -71,9 +68,12 @@ fun AdminPersonalizationScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            Text("Colores actuales:", style = MaterialTheme.typography.titleMedium)
+            Text(Strings.coloresActuales, style = MaterialTheme.typography.titleMedium)
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -82,8 +82,9 @@ fun AdminPersonalizationScreen(
                         .border(1.dp, MaterialTheme.colorScheme.outline),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Claro", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(Strings.modoClaro, style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 }
+
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -92,13 +93,13 @@ fun AdminPersonalizationScreen(
                         .border(1.dp, MaterialTheme.colorScheme.outline),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Oscuro", style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                    Text(Strings.modoOscuro, style = MaterialTheme.typography.bodyMedium, color = Color.White)
                 }
             }
 
             Divider()
 
-            Text("Seleccionar color para Modo CLARO:", style = MaterialTheme.typography.titleSmall)
+            Text(Strings.seleccionarColorClaro, style = MaterialTheme.typography.titleSmall)
             FilaColores(
                 actual = lightHex,
                 opciones = coloresClaro,
@@ -107,7 +108,7 @@ fun AdminPersonalizationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Seleccionar color para Modo OSCURO:", style = MaterialTheme.typography.titleSmall)
+            Text(Strings.seleccionarColorOscuro, style = MaterialTheme.typography.titleSmall)
             FilaColores(
                 actual = darkHex,
                 opciones = coloresOscuro,
@@ -116,10 +117,11 @@ fun AdminPersonalizationScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                "Los colores personalizados afectan globalmente la app para todos los usuarios.",
+                Strings.avisoGlobal,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline
             )
+
         }
     }
 }

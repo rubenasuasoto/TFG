@@ -204,5 +204,8 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
         TextButton(onClick = { navController.navigate(AppScreen.Login.route) }) {
             Text(Strings.registroTieneCuenta, color = MaterialTheme.colorScheme.primary)
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.navigationBarsPadding())
+
     }
 }

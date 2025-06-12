@@ -219,6 +219,20 @@ object Strings {
     val errorProvinciaVacia get() = if (idioma == Idioma.ESP) "La provincia no puede estar vacía" else "Province cannot be empty"
     val errorCamposInvalidos get() = if (idioma == Idioma.ESP) "❌ Corrige los errores antes de guardar" else "❌ Fix the errors before saving"
 
+    val personalizacionTitulo get() = if (idioma == Idioma.ESP) "Personalización de la App" else "App Customization"
+    val coloresActuales get() = if (idioma == Idioma.ESP) "Colores actuales:" else "Current colors:"
+    val modoClaro get() = if (idioma == Idioma.ESP) "Claro" else "Light"
+    val modoOscuro get() = if (idioma == Idioma.ESP) "Oscuro" else "Dark"
+    val seleccionarColorClaro get() = if (idioma == Idioma.ESP) "Seleccionar color para Modo CLARO:" else "Select color for LIGHT mode:"
+    val seleccionarColorOscuro get() = if (idioma == Idioma.ESP) "Seleccionar color para Modo OSCURO:" else "Select color for DARK mode:"
+    val avisoGlobal get() = if (idioma == Idioma.ESP) "Los colores personalizados afectan globalmente la app para todos los usuarios." else "Custom colors affect the app globally for all users."
+
+    val ajustesTitulo get() = if (idioma == Idioma.ESP) "Ajustes" else "Settings"
+    val tamanoLetra get() = if (idioma == Idioma.ESP) "Tamaño de letra" else "Font size"
+    val pequeno get() = if (idioma == Idioma.ESP) "Pequeño" else "Small"
+    val medio get() = if (idioma == Idioma.ESP) "Medio" else "Medium"
+    val grande get() = if (idioma == Idioma.ESP) "Grande" else "Large"
+
 
     val cambiarEstado get() = if (idioma == Idioma.ESP) "Cambiar estado" else "Change status"
 

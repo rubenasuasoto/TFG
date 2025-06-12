@@ -108,8 +108,8 @@ fun AdminProductosScreen(
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Text(producto.articulo ?: Strings.sinNombre, style = MaterialTheme.typography.titleMedium)
-                            Text(" ${producto.precio}")
-                            Text(" ${producto.stock}")
+                            Text("${Strings.precio} : ${producto.precio}")
+                            Text("${Strings.stock} : ${producto.stock}")
 
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),

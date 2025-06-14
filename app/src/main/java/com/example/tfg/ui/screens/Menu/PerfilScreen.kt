@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -47,7 +50,6 @@ import com.example.tfg.ui.navigation.AppScreen
 import com.example.tfg.ui.viewModel.AuthViewModel
 import com.example.tfg.utils.Strings
 import kotlinx.coroutines.launch
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilScreen(
@@ -96,156 +98,143 @@ fun PerfilScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(paddingValues)
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .navigationBarsPadding() // ✅ Esto evita solapamiento con barra inferior
         ) {
-            usuario?.let {
-                if (!isEditing.value) {
-                    Text("${Strings.perfilUsuario}: ${it.username}", style = MaterialTheme.typography.titleMedium)
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                usuario?.let {
+                    if (!isEditing.value) {
+                        Text("${Strings.perfilUsuario}: ${it.username}", style = MaterialTheme.typography.titleMedium)
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("${Strings.perfilEmail}: ${it.email}", modifier = Modifier.weight(1f))
-                        IconButton(onClick = {
-                            email = it.email
-                            isEditing.value = true
-                        }) {
-                            Icon(Icons.Default.Edit, contentDescription = Strings.editar)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("${Strings.perfilEmail}: ${it.email}", modifier = Modifier.weight(1f))
+                            IconButton(onClick = {
+                                email = it.email
+                                isEditing.value = true
+                            }) {
+                                Icon(Icons.Default.Edit, contentDescription = Strings.editar)
+                            }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Divider()
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
+                        Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("${Strings.direccionCalle}: ${it.direccion.calle}", modifier = Modifier.weight(1f))
-                        IconButton(onClick = {
-                            calle = it.direccion.calle
-                            municipio = it.direccion.municipio
-                            provincia = it.direccion.provincia
-                            cp = it.direccion.cp
-                            email = it.email
-                            isEditing.value = true
-                        }) {
-                            Icon(Icons.Default.Edit, contentDescription = Strings.editar)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("${Strings.direccionCalle}: ${it.direccion.calle}", modifier = Modifier.weight(1f))
+                            IconButton(onClick = {
+                                calle = it.direccion.calle
+                                municipio = it.direccion.municipio
+                                provincia = it.direccion.provincia
+                                cp = it.direccion.cp
+                                email = it.email
+                                isEditing.value = true
+                            }) {
+                                Icon(Icons.Default.Edit, contentDescription = Strings.editar)
+                            }
                         }
-                    }
 
-                    Text("${Strings.direccionMunicipio}: ${it.direccion.municipio}")
-                    Text("${Strings.direccionProvincia}: ${it.direccion.provincia}")
-                    Text("${Strings.direccionCP}: ${it.direccion.cp}")
-                } else {
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = {
-                            email = it
-                            emailError = !EMAIL_REGEX.matches(it)
-                        },
-                        label = { Text(Strings.perfilEmail) },
-                        isError = emailError,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (emailError) Text(Strings.errorEmail, color = Color.Red)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Divider()
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
-
-                    OutlinedTextField(
-                        value = calle,
-                        onValueChange = { calle = it },
-                        label = { Text(Strings.direccionCalle) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = municipio,
-                        onValueChange = { municipio = it },
-                        label = { Text(Strings.direccionMunicipio) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = provincia,
-                        onValueChange = {
-                            provincia = it
-                            provinciaError = it.isBlank()
-                        },
-                        label = { Text(Strings.direccionProvincia) },
-                        isError = provinciaError,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    if (provinciaError) Text(Strings.errorProvinciaVacia, color = Color.Red)
-
-                    OutlinedTextField(
-                        value = cp,
-                        onValueChange = { cp = it },
-                        label = { Text(Strings.direccionCP) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Button(
-                            onClick = {
-                                emailError = !EMAIL_REGEX.matches(email)
-                                provinciaError = provincia.isBlank()
-
-                                val camposValidos = !emailError && !provinciaError
-
-                                if (!camposValidos) {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(Strings.errorCamposInvalidos)
-                                    }
-                                    return@Button
-                                }
-
-                                val dto = UsuarioUpdateDTO(
-                                    currentPassword = null,
-                                    newPassword = null,
-                                    email = email,
-                                    rol = null,
-                                    direccion = Direccion(calle, it.direccion.num, municipio, provincia, cp)
-                                )
-
-                                authViewModel.actualizarPerfil(dto) { success, msg ->
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar(msg)
-                                    }
-                                    if (success) {
-                                        isEditing.value = false
-                                        authViewModel.cargarPerfil()
-                                    }
-                                }
+                        Text("${Strings.direccionMunicipio}: ${it.direccion.municipio}")
+                        Text("${Strings.direccionProvincia}: ${it.direccion.provincia}")
+                        Text("${Strings.direccionCP}: ${it.direccion.cp}")
+                    } else {
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = {
+                                email = it
+                                emailError = !EMAIL_REGEX.matches(it)
                             },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(Strings.guardar)
-                        }
+                            label = { Text(Strings.perfilEmail) },
+                            isError = emailError,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (emailError) Text(Strings.errorEmail, color = Color.Red)
 
-                        OutlinedButton(
-                            onClick = { isEditing.value = false },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(Strings.cancelar)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Divider()
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(Strings.perfilDireccion, style = MaterialTheme.typography.titleMedium)
+
+                        OutlinedTextField(value = calle, onValueChange = { calle = it }, label = { Text(Strings.direccionCalle) }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(value = municipio, onValueChange = { municipio = it }, label = { Text(Strings.direccionMunicipio) }, modifier = Modifier.fillMaxWidth())
+                        OutlinedTextField(
+                            value = provincia,
+                            onValueChange = {
+                                provincia = it
+                                provinciaError = it.isBlank()
+                            },
+                            label = { Text(Strings.direccionProvincia) },
+                            isError = provinciaError,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        if (provinciaError) Text(Strings.errorProvinciaVacia, color = Color.Red)
+                        OutlinedTextField(value = cp, onValueChange = { cp = it }, label = { Text(Strings.direccionCP) }, modifier = Modifier.fillMaxWidth())
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Button(
+                                onClick = {
+                                    emailError = !EMAIL_REGEX.matches(email)
+                                    provinciaError = provincia.isBlank()
+
+                                    val camposValidos = !emailError && !provinciaError
+
+                                    if (!camposValidos) {
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(Strings.errorCamposInvalidos)
+                                        }
+                                        return@Button
+                                    }
+
+                                    val dto = UsuarioUpdateDTO(
+                                        currentPassword = null,
+                                        newPassword = null,
+                                        email = email,
+                                        rol = null,
+                                        direccion = Direccion(calle, it.direccion.num, municipio, provincia, cp)
+                                    )
+
+                                    authViewModel.actualizarPerfil(dto) { success, msg ->
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar(msg)
+                                        }
+                                        if (success) {
+                                            isEditing.value = false
+                                            authViewModel.cargarPerfil()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(Strings.guardar)
+                            }
+
+                            OutlinedButton(
+                                onClick = { isEditing.value = false },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(Strings.cancelar)
+                            }
                         }
                     }
-                }
-            } ?: run {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                } ?: run {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
     }
 }
-

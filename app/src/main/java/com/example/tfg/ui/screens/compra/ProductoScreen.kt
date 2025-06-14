@@ -86,7 +86,7 @@ fun ProductoScreen(
                         .padding(paddingValues),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("❌ Producto no encontrado", color = MaterialTheme.colorScheme.error)
+                    Text(" Producto no encontrado", color = MaterialTheme.colorScheme.error)
                 }
             }
 

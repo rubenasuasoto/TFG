@@ -59,14 +59,17 @@ class AuthViewModel(
                     _loginState.value = AuthState.Error("Token no recibido")
                 }
             } catch (e: Exception) {
-                _loginState.value = AuthState.Error(
-                    when (e) {
-                        is IOException -> "Error de conexión"
-                        is HttpException -> "Credenciales incorrectas"
-                        else -> "Error desconocido"
+                val errorMsg = when (e) {
+                    is IOException -> "Error de conexión"
+                    is HttpException -> {
+                        val body = e.response()?.errorBody()?.string()
+                        body?.substringAfter("\"message\":\"")?.substringBefore("\"") ?: "Credenciales incorrectas"
                     }
-                )
+                    else -> "Error desconocido"
+                }
+                _loginState.value = AuthState.Error(errorMsg)
             }
+
         }
     }
 
@@ -92,12 +95,16 @@ class AuthViewModel(
                 )
                 onResult(true, "Registro exitoso")
             } catch (e: HttpException) {
-                onResult(false, if (e.code() == 409) "Usuario/email ya existe" else "Error en el servidor")
+                val errorBody = e.response()?.errorBody()?.string()
+                val mensajeLimpio = errorBody?.substringAfter("\"message\":\"")?.substringBefore("\"") ?: "Error en el servidor"
+                onResult(false, mensajeLimpio)
             } catch (e: Exception) {
                 onResult(false, "Error de conexión")
             }
         }
     }
+
+
 
     // ░░░ Perfil del usuario ░░░
     fun cargarPerfil() {

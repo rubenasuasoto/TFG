@@ -88,7 +88,7 @@ fun HomeScreen(
                 .fillMaxSize()
         ) {
             BuscadorProductosRemoto(productoViewModel) { productoSeleccionado ->
-                navController.navigate("detalle_producto/${productoSeleccionado.numeroProducto}")
+                navController.navigate("producto/${productoSeleccionado.numeroProducto}")
             }
 
             Spacer(modifier = Modifier.height(16.dp))

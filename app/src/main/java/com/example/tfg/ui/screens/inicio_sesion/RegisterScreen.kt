@@ -173,12 +173,22 @@ fun RegisterScreen(navController: NavHostController, viewModel: AuthViewModel) {
                         viewModel.register(username, email, password, passwordRepeat, direccion) { success, message ->
                             registerResponse.value = message
                             isLoading.value = false
+
+                            if (!success) {
+                                when {
+                                    "usuario" in message.lowercase() -> usernameError = true
+                                    "email" in message.lowercase() -> emailError = true
+                                    "contraseña" in message.lowercase() -> passwordError = true
+                                }
+                            }
+
                             if (success) {
                                 navController.navigate(AppScreen.Login.route) {
                                     popUpTo(AppScreen.Registro.route) { inclusive = true }
                                 }
                             }
                         }
+
                     } else {
                         registerResponse.value = Strings.registroErrores
                     }
